@@ -80,7 +80,7 @@ namespace SERVIGO.Forms.Customer
                 Font      = AppTheme.FontBodyBold,
                 ForeColor = Color.White,
                 AutoSize  = true,
-                Location  = new Point(22, 60)
+                Location  = new Point(22, 66)
             });
             _pnlSidebar.Controls.Add(new Label
             {
@@ -88,16 +88,16 @@ namespace SERVIGO.Forms.Customer
                 Font      = AppTheme.FontSmall,
                 ForeColor = Color.FromArgb(140, 170, 210),
                 AutoSize  = true,
-                Location  = new Point(22, 82)
+                Location  = new Point(22, 92)
             });
             _pnlSidebar.Controls.Add(new Panel
             {
-                Location  = new Point(20, 110),
+                Location  = new Point(20, 122),
                 Size      = new Size(196, 1),
                 BackColor = Color.FromArgb(50, 80, 120)
             });
 
-            int y = 126;
+            int y = 146;
             var navItems = new (string Icon, string Label, Action Click)[]
             {
                 ("🏠", "Home",             () => { ShowPanel(_pnlHome);   }),
@@ -244,7 +244,7 @@ namespace SERVIGO.Forms.Customer
                 Font      = new Font("Segoe UI", 28, FontStyle.Bold),
                 ForeColor = AppTheme.Primary,
                 AutoSize  = true,
-                Margin    = new Padding(0, 0, 0, 8)
+                Margin    = new Padding(0, 0, 0, 16)
             });
             flow.Controls.Add(new Label
             {
@@ -252,7 +252,7 @@ namespace SERVIGO.Forms.Customer
                 Font      = AppTheme.FontSubtitle,
                 ForeColor = AppTheme.TextMuted,
                 AutoSize  = true,
-                Margin    = new Padding(0, 0, 0, 36)
+                Margin    = new Padding(0, 0, 0, 44)
             });
 
             // Quick action cards
@@ -724,16 +724,16 @@ namespace SERVIGO.Forms.Customer
 
         private static Panel MakePanelHeader(string title, string subtitle)
         {
-            var p = new Panel { Height = 90, BackColor = AppTheme.CardBg, Dock = DockStyle.Top };
+            var p = new Panel { Height = 110, BackColor = AppTheme.CardBg, Dock = DockStyle.Top };
             p.Controls.Add(new Label
             {
                 Text = title, Font = AppTheme.FontTitle, ForeColor = AppTheme.Primary,
-                AutoSize = true, Location = new Point(24, 16)
+                AutoSize = true, Location = new Point(28, 22)
             });
             p.Controls.Add(new Label
             {
                 Text = subtitle, Font = AppTheme.FontBody, ForeColor = AppTheme.TextMuted,
-                AutoSize = true, Location = new Point(24, 52)
+                AutoSize = true, Location = new Point(28, 62)
             });
             p.Controls.Add(new Panel { Dock = DockStyle.Bottom, Height = 3, BackColor = AppTheme.Accent });
             return p;

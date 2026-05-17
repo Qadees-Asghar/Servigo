@@ -92,7 +92,7 @@ namespace SERVIGO.Forms.Provider
                 Font      = AppTheme.FontBodyBold,
                 ForeColor = Color.White,
                 AutoSize  = true,
-                Location  = new Point(22, 60)
+                Location  = new Point(22, 66)
             });
             _pnlSidebar.Controls.Add(new Label
             {
@@ -100,16 +100,16 @@ namespace SERVIGO.Forms.Provider
                 Font      = AppTheme.FontSmall,
                 ForeColor = Color.FromArgb(140, 170, 210),
                 AutoSize  = true,
-                Location  = new Point(22, 82)
+                Location  = new Point(22, 92)
             });
             _pnlSidebar.Controls.Add(new Panel
             {
-                Location  = new Point(20, 108),
+                Location  = new Point(20, 122),
                 Size      = new Size(196, 1),
                 BackColor = Color.FromArgb(50, 80, 120)
             });
 
-            int y = 124;
+            int y = 148;
             var navItems = new (string Icon, string Label, Action Click)[]
             {
                 ("🏠", "Dashboard",         () => ShowPanel(_pnlHome)),
@@ -256,7 +256,7 @@ namespace SERVIGO.Forms.Provider
                 Font      = new Font("Segoe UI", 26, FontStyle.Bold),
                 ForeColor = AppTheme.Primary,
                 AutoSize  = true,
-                Margin    = new Padding(0, 0, 0, 8)
+                Margin    = new Padding(0, 0, 0, 16)
             });
 
             var prov = ProviderDAL.GetProviderByUserID(SessionManager.CurrentUser!.UserID);
@@ -271,7 +271,7 @@ namespace SERVIGO.Forms.Provider
                 Font      = AppTheme.FontBodyBold,
                 ForeColor = statusColor,
                 AutoSize  = true,
-                Margin    = new Padding(0, 0, 0, 32)
+                Margin    = new Padding(0, 0, 0, 40)
             });
 
             // Quick stat cards
@@ -294,9 +294,9 @@ namespace SERVIGO.Forms.Provider
                 int pending = dt.AsEnumerable()
                     .Count(r => Convert.ToInt32(r["StatusID"]) == 1);
 
-                var c1 = AppTheme.MakeStatCard("Total Completed", completed.ToString(), AppTheme.Success, 200, 120);
-                var c2 = AppTheme.MakeStatCard("Pending Bookings", pending.ToString(), AppTheme.Warning, 200, 120);
-                c1.Margin = new Padding(0, 0, 20, 0);
+                var c1 = AppTheme.MakeStatCard("Total Completed", completed.ToString(), AppTheme.Success, 220, 130);
+                var c2 = AppTheme.MakeStatCard("Pending Bookings", pending.ToString(), AppTheme.Warning, 220, 130);
+                c1.Margin = new Padding(0, 0, 24, 0);
                 cardRow.Controls.Add(c1);
                 cardRow.Controls.Add(c2);
             }
@@ -781,16 +781,16 @@ namespace SERVIGO.Forms.Provider
 
         private static Panel MakePanelHeader(string title, string subtitle)
         {
-            var p = new Panel { Height = 90, BackColor = AppTheme.CardBg, Dock = DockStyle.Top };
+            var p = new Panel { Height = 110, BackColor = AppTheme.CardBg, Dock = DockStyle.Top };
             p.Controls.Add(new Label
             {
                 Text = title, Font = AppTheme.FontTitle, ForeColor = AppTheme.Primary,
-                AutoSize = true, Location = new Point(24, 16)
+                AutoSize = true, Location = new Point(28, 22)
             });
             p.Controls.Add(new Label
             {
                 Text = subtitle, Font = AppTheme.FontBody, ForeColor = AppTheme.TextMuted,
-                AutoSize = true, Location = new Point(24, 52)
+                AutoSize = true, Location = new Point(28, 62)
             });
             p.Controls.Add(new Panel { Dock = DockStyle.Bottom, Height = 3, BackColor = AppTheme.Success });
             return p;
