@@ -92,7 +92,7 @@ namespace SERVIGO.Forms.Provider
                 Font      = AppTheme.FontBodyBold,
                 ForeColor = Color.White,
                 AutoSize  = true,
-                Location  = new Point(22, 66)
+                Location  = new Point(22, 76)
             });
             _pnlSidebar.Controls.Add(new Label
             {
@@ -100,16 +100,16 @@ namespace SERVIGO.Forms.Provider
                 Font      = AppTheme.FontSmall,
                 ForeColor = Color.FromArgb(140, 170, 210),
                 AutoSize  = true,
-                Location  = new Point(22, 92)
+                Location  = new Point(22, 102)
             });
             _pnlSidebar.Controls.Add(new Panel
             {
-                Location  = new Point(20, 122),
+                Location  = new Point(20, 138),
                 Size      = new Size(196, 1),
                 BackColor = Color.FromArgb(50, 80, 120)
             });
 
-            int y = 148;
+            int y = 160;
             var navItems = new (string Icon, string Label, Action Click)[]
             {
                 ("🏠", "Dashboard",         () => ShowPanel(_pnlHome)),
@@ -294,8 +294,8 @@ namespace SERVIGO.Forms.Provider
                 int pending = dt.AsEnumerable()
                     .Count(r => Convert.ToInt32(r["StatusID"]) == 1);
 
-                var c1 = AppTheme.MakeStatCard("Total Completed", completed.ToString(), AppTheme.Success, 220, 130);
-                var c2 = AppTheme.MakeStatCard("Pending Bookings", pending.ToString(), AppTheme.Warning, 220, 130);
+                var c1 = AppTheme.MakeStatCard("Total Completed", completed.ToString(), AppTheme.Success, 230, 150);
+                var c2 = AppTheme.MakeStatCard("Pending Bookings", pending.ToString(), AppTheme.Warning, 230, 150);
                 c1.Margin = new Padding(0, 0, 24, 0);
                 cardRow.Controls.Add(c1);
                 cardRow.Controls.Add(c2);
@@ -369,7 +369,7 @@ namespace SERVIGO.Forms.Provider
             _txtSvcName  = AppTheme.MakeTextBox(200, 36); _txtSvcName.Location  = new Point(20, 56);
             _txtSvcDesc  = AppTheme.MakeTextBox(260, 36); _txtSvcDesc.Location  = new Point(232, 56);
             _txtSvcPrice = AppTheme.MakeTextBox(100, 36); _txtSvcPrice.Location = new Point(506, 56);
-            _txtSvcDur   = AppTheme.MakeTextBox(100, 36); _txtSvcDur.Location   = new Point(618, 56);
+            _txtSvcDur   = AppTheme.MakeTextBox(140, 36); _txtSvcDur.Location   = new Point(618, 56);
 
             AppTheme.AddPlaceholder(_txtSvcName,  "Service name…");
             AppTheme.AddPlaceholder(_txtSvcDesc,  "Short description…");
@@ -377,7 +377,7 @@ namespace SERVIGO.Forms.Provider
             AppTheme.AddPlaceholder(_txtSvcDur,   "Duration (min)");
 
             var btnAdd = AppTheme.MakeSuccessButton("+ Add Service", 140, 36);
-            btnAdd.Location = new Point(730, 56);
+            btnAdd.Location = new Point(770, 56);
             btnAdd.Click   += BtnAddService_Click;
 
             card.Controls.Add(_txtSvcName);
@@ -785,12 +785,12 @@ namespace SERVIGO.Forms.Provider
             p.Controls.Add(new Label
             {
                 Text = title, Font = AppTheme.FontTitle, ForeColor = AppTheme.Primary,
-                AutoSize = true, Location = new Point(28, 22)
+                AutoSize = true, Location = new Point(28, 20)
             });
             p.Controls.Add(new Label
             {
                 Text = subtitle, Font = AppTheme.FontBody, ForeColor = AppTheme.TextMuted,
-                AutoSize = true, Location = new Point(28, 62)
+                AutoSize = true, Location = new Point(28, 68)
             });
             p.Controls.Add(new Panel { Dock = DockStyle.Bottom, Height = 3, BackColor = AppTheme.Success });
             return p;

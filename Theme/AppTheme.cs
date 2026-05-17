@@ -170,7 +170,7 @@ namespace SERVIGO.Theme
 
         // ── Stat Card ─────────────────────────────────────────────────────────
 
-        public static Panel MakeStatCard(string title, string value, Color accent, int width = 220, int height = 130)
+        public static Panel MakeStatCard(string title, string value, Color accent, int width = 230, int height = 150)
         {
             var card = new Panel
             {
@@ -192,8 +192,8 @@ namespace SERVIGO.Theme
                 ForeColor = accent,
                 AutoSize  = false,
                 TextAlign = ContentAlignment.MiddleLeft,
-                Location  = new Point(20, 18),
-                Size      = new Size(width - 32, 54),
+                Location  = new Point(20, 20),
+                Size      = new Size(width - 32, 68),
                 BackColor = Color.Transparent
             };
 
@@ -204,8 +204,8 @@ namespace SERVIGO.Theme
                 ForeColor = TextMuted,
                 AutoSize  = false,
                 TextAlign = ContentAlignment.MiddleLeft,
-                Location  = new Point(20, 78),
-                Size      = new Size(width - 32, 26),
+                Location  = new Point(20, 94),
+                Size      = new Size(width - 32, 28),
                 BackColor = Color.Transparent
             };
 

@@ -87,7 +87,7 @@ namespace SERVIGO.Forms.Admin
                 Font      = AppTheme.FontSmall,
                 ForeColor = Color.FromArgb(130, 160, 200),
                 AutoSize  = true,
-                Location  = new Point(22, 62)
+                Location  = new Point(22, 60)
             };
 
             // User info chip
@@ -98,13 +98,13 @@ namespace SERVIGO.Forms.Admin
                 ForeColor = Color.White,
                 AutoSize  = false,
                 Size      = new Size(196, 30),
-                Location  = new Point(22, 92),
+                Location  = new Point(22, 100),
                 TextAlign = ContentAlignment.MiddleLeft
             };
 
             var divider = new Panel
             {
-                Location  = new Point(20, 134),
+                Location  = new Point(20, 142),
                 Size      = new Size(196, 1),
                 BackColor = Color.FromArgb(50, 80, 120)
             };
@@ -115,7 +115,7 @@ namespace SERVIGO.Forms.Admin
             _pnlSidebar.Controls.Add(divider);
 
             // Nav buttons
-            int y = 156;
+            int y = 164;
             var navItems = new (string Icon, string Label, Action Click)[]
             {
                 ("⊞", "Dashboard",         () => { LoadDashboardStats(); ShowPanel(_pnlDashboard); }),
@@ -306,7 +306,7 @@ namespace SERVIGO.Forms.Admin
             for (int i = 0; i < cardData.Length; i++)
             {
                 var (title, val, color) = cardData[i];
-                var card = AppTheme.MakeStatCard(title, val, color, 220, 130);
+                var card = AppTheme.MakeStatCard(title, val, color, 230, 150);
                 card.Margin = new Padding(0, 0, 24, 24);
 
                 // Grab inner value label for updates
@@ -776,7 +776,7 @@ namespace SERVIGO.Forms.Admin
                 Font      = AppTheme.FontTitle,
                 ForeColor = AppTheme.Primary,
                 AutoSize  = true,
-                Location  = new Point(28, 22)
+                Location  = new Point(28, 20)
             };
             var sub = new Label
             {
@@ -784,7 +784,7 @@ namespace SERVIGO.Forms.Admin
                 Font      = AppTheme.FontBody,
                 ForeColor = AppTheme.TextMuted,
                 AutoSize  = true,
-                Location  = new Point(28, 62)
+                Location  = new Point(28, 68)
             };
             var bar = new Panel
             {

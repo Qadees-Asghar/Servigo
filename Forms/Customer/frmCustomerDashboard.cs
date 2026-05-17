@@ -80,7 +80,7 @@ namespace SERVIGO.Forms.Customer
                 Font      = AppTheme.FontBodyBold,
                 ForeColor = Color.White,
                 AutoSize  = true,
-                Location  = new Point(22, 66)
+                Location  = new Point(22, 76)
             });
             _pnlSidebar.Controls.Add(new Label
             {
@@ -88,16 +88,16 @@ namespace SERVIGO.Forms.Customer
                 Font      = AppTheme.FontSmall,
                 ForeColor = Color.FromArgb(140, 170, 210),
                 AutoSize  = true,
-                Location  = new Point(22, 92)
+                Location  = new Point(22, 102)
             });
             _pnlSidebar.Controls.Add(new Panel
             {
-                Location  = new Point(20, 122),
+                Location  = new Point(20, 138),
                 Size      = new Size(196, 1),
                 BackColor = Color.FromArgb(50, 80, 120)
             });
 
-            int y = 146;
+            int y = 160;
             var navItems = new (string Icon, string Label, Action Click)[]
             {
                 ("🏠", "Home",             () => { ShowPanel(_pnlHome);   }),
@@ -728,12 +728,12 @@ namespace SERVIGO.Forms.Customer
             p.Controls.Add(new Label
             {
                 Text = title, Font = AppTheme.FontTitle, ForeColor = AppTheme.Primary,
-                AutoSize = true, Location = new Point(28, 22)
+                AutoSize = true, Location = new Point(28, 20)
             });
             p.Controls.Add(new Label
             {
                 Text = subtitle, Font = AppTheme.FontBody, ForeColor = AppTheme.TextMuted,
-                AutoSize = true, Location = new Point(28, 62)
+                AutoSize = true, Location = new Point(28, 68)
             });
             p.Controls.Add(new Panel { Dock = DockStyle.Bottom, Height = 3, BackColor = AppTheme.Accent });
             return p;
