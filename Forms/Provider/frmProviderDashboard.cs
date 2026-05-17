@@ -238,13 +238,14 @@ namespace SERVIGO.Forms.Provider
 
         private Panel BuildHomePanel()
         {
-            var panel = new Panel { BackColor = AppTheme.Background };
+            var panel = new Panel { BackColor = AppTheme.Background, AutoScroll = true };
 
             var flow = new FlowLayoutPanel
             {
                 FlowDirection = FlowDirection.TopDown,
                 AutoSize      = true,
                 WrapContents  = false,
+                Dock          = DockStyle.Top,
                 Padding       = new Padding(40),
                 BackColor     = Color.Transparent
             };
@@ -345,30 +346,38 @@ namespace SERVIGO.Forms.Provider
             // Add service form card
             var card = new Panel
             {
-                Height    = 170,
+                Height    = 130,
                 Dock      = DockStyle.Top,
                 BackColor = AppTheme.CardBg,
-                Padding   = new Padding(20, 14, 20, 14)
+                Padding   = new Padding(20, 10, 20, 10)
             };
 
             card.Controls.Add(new Label
             {
                 Text = "Add New Service", Font = AppTheme.FontBodyBold,
-                ForeColor = AppTheme.Primary, AutoSize = true, Location = new Point(20, 14)
+                ForeColor = AppTheme.Primary, AutoSize = true, Location = new Point(20, 10)
             });
 
-            _txtSvcName  = AppTheme.MakeTextBox(200, 38); _txtSvcName.Location  = new Point(20, 44);
-            _txtSvcDesc  = AppTheme.MakeTextBox(260, 38); _txtSvcDesc.Location  = new Point(232, 44);
-            _txtSvcPrice = AppTheme.MakeTextBox(100, 38); _txtSvcPrice.Location = new Point(506, 44);
-            _txtSvcDur   = AppTheme.MakeTextBox(100, 38); _txtSvcDur.Location   = new Point(618, 44);
+            // Field labels row
+            var lblName = new Label { Text = "Name", Font = AppTheme.FontSmall, ForeColor = AppTheme.TextMuted, AutoSize = true, Location = new Point(20, 38) };
+            var lblDesc = new Label { Text = "Description", Font = AppTheme.FontSmall, ForeColor = AppTheme.TextMuted, AutoSize = true, Location = new Point(232, 38) };
+            var lblPrc  = new Label { Text = "Price (PKR)", Font = AppTheme.FontSmall, ForeColor = AppTheme.TextMuted, AutoSize = true, Location = new Point(506, 38) };
+            var lblDur  = new Label { Text = "Duration (min)", Font = AppTheme.FontSmall, ForeColor = AppTheme.TextMuted, AutoSize = true, Location = new Point(618, 38) };
+            card.Controls.Add(lblName); card.Controls.Add(lblDesc); card.Controls.Add(lblPrc); card.Controls.Add(lblDur);
+
+            // Input fields row — below labels
+            _txtSvcName  = AppTheme.MakeTextBox(200, 36); _txtSvcName.Location  = new Point(20, 56);
+            _txtSvcDesc  = AppTheme.MakeTextBox(260, 36); _txtSvcDesc.Location  = new Point(232, 56);
+            _txtSvcPrice = AppTheme.MakeTextBox(100, 36); _txtSvcPrice.Location = new Point(506, 56);
+            _txtSvcDur   = AppTheme.MakeTextBox(100, 36); _txtSvcDur.Location   = new Point(618, 56);
 
             AppTheme.AddPlaceholder(_txtSvcName,  "Service name…");
             AppTheme.AddPlaceholder(_txtSvcDesc,  "Short description…");
             AppTheme.AddPlaceholder(_txtSvcPrice, "Price (PKR)");
             AppTheme.AddPlaceholder(_txtSvcDur,   "Duration (min)");
 
-            var btnAdd = AppTheme.MakeSuccessButton("+ Add Service", 140, 38);
-            btnAdd.Location = new Point(730, 44);
+            var btnAdd = AppTheme.MakeSuccessButton("+ Add Service", 140, 36);
+            btnAdd.Location = new Point(730, 56);
             btnAdd.Click   += BtnAddService_Click;
 
             card.Controls.Add(_txtSvcName);
@@ -376,16 +385,6 @@ namespace SERVIGO.Forms.Provider
             card.Controls.Add(_txtSvcPrice);
             card.Controls.Add(_txtSvcDur);
             card.Controls.Add(btnAdd);
-
-            var lblHints = new Label
-            {
-                Text      = "Name                                Description                            Price (PKR)     Duration (min)",
-                Font      = AppTheme.FontSmall,
-                ForeColor = AppTheme.TextMuted,
-                AutoSize  = true,
-                Location  = new Point(20, 30)
-            };
-            card.Controls.Add(lblHints);
 
             _dgvServices = AppTheme.MakeDataGrid();
             _dgvServices.Dock = DockStyle.Fill;
@@ -485,20 +484,26 @@ namespace SERVIGO.Forms.Provider
             // Add slot form
             var card = new Panel
             {
-                Height = 120, Dock = DockStyle.Top,
-                BackColor = AppTheme.CardBg, Padding = new Padding(20, 14, 20, 14)
+                Height = 110, Dock = DockStyle.Top,
+                BackColor = AppTheme.CardBg, Padding = new Padding(20, 10, 20, 10)
             };
 
             card.Controls.Add(new Label
             {
                 Text = "Add New Time Slot", Font = AppTheme.FontBodyBold,
-                ForeColor = AppTheme.Primary, AutoSize = true, Location = new Point(20, 14)
+                ForeColor = AppTheme.Primary, AutoSize = true, Location = new Point(20, 10)
             });
+
+            // Field labels
+            var lblDate  = new Label { Text = "Date", Font = AppTheme.FontSmall, ForeColor = AppTheme.TextMuted, AutoSize = true, Location = new Point(20, 34) };
+            var lblStart = new Label { Text = "Start Time", Font = AppTheme.FontSmall, ForeColor = AppTheme.TextMuted, AutoSize = true, Location = new Point(194, 34) };
+            var lblEnd   = new Label { Text = "End Time", Font = AppTheme.FontSmall, ForeColor = AppTheme.TextMuted, AutoSize = true, Location = new Point(348, 34) };
+            card.Controls.Add(lblDate); card.Controls.Add(lblStart); card.Controls.Add(lblEnd);
 
             _dtpDate = new DateTimePicker
             {
-                Location  = new Point(20, 44),
-                Size      = new Size(160, 38),
+                Location  = new Point(20, 52),
+                Size      = new Size(160, 36),
                 Font      = AppTheme.FontInput,
                 Format    = DateTimePickerFormat.Short,
                 MinDate   = DateTime.Today,
@@ -508,8 +513,8 @@ namespace SERVIGO.Forms.Provider
 
             _dtpStart = new DateTimePicker
             {
-                Location  = new Point(194, 44),
-                Size      = new Size(140, 38),
+                Location  = new Point(194, 52),
+                Size      = new Size(140, 36),
                 Font      = AppTheme.FontInput,
                 Format    = DateTimePickerFormat.Time,
                 ShowUpDown = true,
@@ -518,25 +523,21 @@ namespace SERVIGO.Forms.Provider
 
             _dtpEnd = new DateTimePicker
             {
-                Location  = new Point(348, 44),
-                Size      = new Size(140, 38),
+                Location  = new Point(348, 52),
+                Size      = new Size(140, 36),
                 Font      = AppTheme.FontInput,
                 Format    = DateTimePickerFormat.Time,
                 ShowUpDown = true,
                 Value     = DateTime.Today.AddHours(10)
             };
 
-            var btnAddSlot = AppTheme.MakeSuccessButton("+ Add Slot", 120, 38);
-            btnAddSlot.Location = new Point(502, 44);
+            var btnAddSlot = AppTheme.MakeSuccessButton("+ Add Slot", 120, 36);
+            btnAddSlot.Location = new Point(502, 52);
             btnAddSlot.Click   += BtnAddSlot_Click;
 
-            var lblDate  = FieldLabel("Date",       new Point(20, 30));
-            var lblStart = FieldLabel("Start Time", new Point(194, 30));
-            var lblEnd   = FieldLabel("End Time",   new Point(348, 30));
-
-            card.Controls.Add(lblDate);  card.Controls.Add(_dtpDate);
-            card.Controls.Add(lblStart); card.Controls.Add(_dtpStart);
-            card.Controls.Add(lblEnd);   card.Controls.Add(_dtpEnd);
+            card.Controls.Add(_dtpDate);
+            card.Controls.Add(_dtpStart);
+            card.Controls.Add(_dtpEnd);
             card.Controls.Add(btnAddSlot);
 
             _dgvSlots = AppTheme.MakeDataGrid();

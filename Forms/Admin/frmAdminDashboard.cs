@@ -273,12 +273,21 @@ namespace SERVIGO.Forms.Admin
                 "System statistics and activity at a glance.");
             pnlHead.Dock = DockStyle.Top;
 
+            // Content area — Dock.Fill so it occupies space BELOW the header
+            var content = new Panel
+            {
+                Dock       = DockStyle.Fill,
+                AutoScroll = true,
+                BackColor  = Color.Transparent,
+                Padding    = new Padding(24, 24, 24, 24)
+            };
+
             // Stat cards row
             var flow = new FlowLayoutPanel
             {
                 FlowDirection = FlowDirection.LeftToRight,
                 AutoSize      = true,
-                Location      = new Point(24, 100),
+                Dock          = DockStyle.Top,
                 BackColor     = Color.Transparent,
                 WrapContents  = true,
                 Padding       = new Padding(0)
@@ -288,7 +297,6 @@ namespace SERVIGO.Forms.Admin
             {
                 ("Total Customers",  "0", AppTheme.Info),
                 ("Total Providers",  "0", AppTheme.Success),
-                // AppTheme.Warning was not defined; use AppTheme.Gold for warning-style accent
                 ("Pending Approvals","0", AppTheme.Gold),
                 ("Total Bookings",   "0", AppTheme.Primary),
                 ("Completed",        "0", AppTheme.Accent),
@@ -312,7 +320,8 @@ namespace SERVIGO.Forms.Admin
             _lblStatBookings  = statLabels[3];
             _lblStatCompleted = statLabels[4];
 
-            panel.Controls.Add(flow);
+            content.Controls.Add(flow);
+            panel.Controls.Add(content);    // Fill — occupies remaining space
             panel.Controls.Add(pnlHead);   // Top — last → topmost
             return panel;
         }
@@ -595,29 +604,49 @@ namespace SERVIGO.Forms.Admin
 
         private Panel BuildAnalyticsPanel()
         {
-            var panel = new Panel { BackColor = AppTheme.Background, AutoScroll = true };
+            var panel = new Panel { BackColor = AppTheme.Background };
             var head  = MakePanelHeader("Analytics & Reports", "GROUP BY booking summaries and provider performance.");
             head.Dock = DockStyle.Top;
 
+            // Content area — Dock.Fill + AutoScroll so it sits below header
+            var content = new Panel
+            {
+                Dock       = DockStyle.Fill,
+                AutoScroll = true,
+                BackColor  = Color.Transparent,
+                Padding    = new Padding(24, 20, 24, 20)
+            };
+
+            var flow = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.TopDown,
+                AutoSize      = true,
+                WrapContents  = false,
+                Dock          = DockStyle.Top,
+                BackColor     = Color.Transparent
+            };
+
             var lblS1 = AppTheme.MakeLabel("Bookings by Status", AppTheme.FontSubtitle, AppTheme.Primary);
-            lblS1.Location = new Point(24, 100);
-            panel.Controls.Add(lblS1);
+            lblS1.Margin = new Padding(0, 0, 0, 8);
+            flow.Controls.Add(lblS1);
 
             _dgvSummary = AppTheme.MakeDataGrid();
-            _dgvSummary.Location = new Point(24, 130);
-            _dgvSummary.Size     = new Size(500, 200);
-            panel.Controls.Add(_dgvSummary);
+            _dgvSummary.Size   = new Size(500, 200);
+            _dgvSummary.Margin = new Padding(0, 0, 0, 24);
+            flow.Controls.Add(_dgvSummary);
 
             var lblS2 = AppTheme.MakeLabel("Provider Performance", AppTheme.FontSubtitle, AppTheme.Primary);
-            lblS2.Location = new Point(24, 350);
-            panel.Controls.Add(lblS2);
+            lblS2.Margin = new Padding(0, 0, 0, 8);
+            flow.Controls.Add(lblS2);
 
             _dgvProvStats = AppTheme.MakeDataGrid();
-            _dgvProvStats.Location = new Point(24, 380);
-            _dgvProvStats.Size     = new Size(900, 300);
-            panel.Controls.Add(_dgvProvStats);
+            _dgvProvStats.Size   = new Size(900, 300);
+            _dgvProvStats.Margin = new Padding(0, 0, 0, 20);
+            flow.Controls.Add(_dgvProvStats);
 
-            panel.Controls.Add(head);   // Top — last → topmost
+            content.Controls.Add(flow);
+            panel.Controls.Add(content);   // Fill
+            panel.Controls.Add(head);      // Top — last → topmost
 
             return panel;
         }

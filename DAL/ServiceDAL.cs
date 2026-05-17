@@ -68,7 +68,7 @@ namespace SERVIGO.DAL
                 JOIN   ServiceProviders sp ON s.ProviderID  = sp.ProviderID
                 JOIN   Users             u  ON sp.UserID     = u.UserID
                 JOIN   ServiceCategories sc ON sp.CategoryID = sc.CategoryID
-                WHERE  s.IsActive = 1 AND sp.IsApproved = 1 AND u.IsActive = 1
+                WHERE  s.IsActive = 1 AND u.IsActive = 1
                   AND  (@Keyword = '' OR s.ServiceName LIKE '%' + @Keyword + '%'
                                      OR u.FullName    LIKE '%' + @Keyword + '%')
                   AND  (@CatID IS NULL OR sp.CategoryID = @CatID)

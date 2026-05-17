@@ -226,13 +226,14 @@ namespace SERVIGO.Forms.Customer
 
         private Panel BuildHomePanel()
         {
-            var panel = new Panel { BackColor = AppTheme.Background };
+            var panel = new Panel { BackColor = AppTheme.Background, AutoScroll = true };
 
             var flow = new FlowLayoutPanel
             {
                 FlowDirection = FlowDirection.TopDown,
                 AutoSize      = true,
                 WrapContents  = false,
+                Dock          = DockStyle.Top,
                 Padding       = new Padding(40, 40, 40, 40),
                 BackColor     = Color.Transparent
             };
@@ -417,11 +418,27 @@ namespace SERVIGO.Forms.Customer
 
         private Panel BuildBookPanel()
         {
-            var panel  = new Panel { BackColor = AppTheme.Background, AutoScroll = true };
+            var panel  = new Panel { BackColor = AppTheme.Background };
             var header = MakePanelHeader("Book Appointment",
                 "Select a time slot and confirm your booking.");
 
-            int y = 110;
+            // Content area — Dock.Fill + AutoScroll, sits below header
+            var content = new Panel
+            {
+                Dock       = DockStyle.Fill,
+                AutoScroll = true,
+                BackColor  = Color.Transparent,
+                Padding    = new Padding(32, 24, 32, 24)
+            };
+
+            var flow = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.TopDown,
+                AutoSize      = true,
+                WrapContents  = false,
+                Dock          = DockStyle.Top,
+                BackColor     = Color.Transparent
+            };
 
             _lblBookService = new Label
             {
@@ -429,45 +446,58 @@ namespace SERVIGO.Forms.Customer
                 Font      = AppTheme.FontSubtitle,
                 ForeColor = AppTheme.Primary,
                 AutoSize  = true,
-                Location  = new Point(32, y)
+                Margin    = new Padding(0, 0, 0, 20)
             };
-            panel.Controls.Add(_lblBookService);
-            y += 40;
+            flow.Controls.Add(_lblBookService);
 
-            panel.Controls.Add(FieldLabel("Available Time Slots  (next 7 days)", new Point(32, y)));
-            y += 26;
+            var lblSlotHdr = FieldLabel("Available Time Slots  (next 7 days)", Point.Empty);
+            lblSlotHdr.Margin = new Padding(0, 0, 0, 6);
+            flow.Controls.Add(lblSlotHdr);
 
             _cboSlots = AppTheme.MakeComboBox(460, 44);
-            _cboSlots.Location = new Point(32, y);
-            panel.Controls.Add(_cboSlots);
-            y += 60;
+            _cboSlots.Margin = new Padding(0, 0, 0, 20);
+            flow.Controls.Add(_cboSlots);
 
-            panel.Controls.Add(FieldLabel("Notes  (optional)", new Point(32, y)));
-            y += 26;
+            var lblNotesHdr = FieldLabel("Notes  (optional)", Point.Empty);
+            lblNotesHdr.Margin = new Padding(0, 0, 0, 6);
+            flow.Controls.Add(lblNotesHdr);
 
             _txtNotes = new TextBox
             {
-                Location    = new Point(32, y),
                 Size        = new Size(460, 80),
                 Multiline   = true,
                 Font        = AppTheme.FontInput,
                 BackColor   = AppTheme.InputBg,
-                BorderStyle = BorderStyle.FixedSingle
+                ForeColor   = AppTheme.TextLight,
+                BorderStyle = BorderStyle.FixedSingle,
+                Margin      = new Padding(0, 0, 0, 24)
             };
             AppTheme.AddPlaceholder(_txtNotes, "Any special instructions…");
-            panel.Controls.Add(_txtNotes);
-            y += 96;
+            flow.Controls.Add(_txtNotes);
+
+            // Buttons row
+            var btnRow = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.LeftToRight,
+                AutoSize      = true,
+                WrapContents  = false,
+                BackColor     = Color.Transparent,
+                Margin        = new Padding(0)
+            };
 
             var btnConfirm = AppTheme.MakePrimaryButton("✔  Confirm Booking", 220, 48);
-            btnConfirm.Location = new Point(32, y);
-            btnConfirm.Click   += BtnConfirmBooking_Click;
-            panel.Controls.Add(btnConfirm);
+            btnConfirm.Margin = new Padding(0, 0, 12, 0);
+            btnConfirm.Click += BtnConfirmBooking_Click;
+            btnRow.Controls.Add(btnConfirm);
 
             var btnBack = AppTheme.MakeOutlineButton("← Back to Services", 200, 48);
-            btnBack.Location = new Point(262, y);
-            btnBack.Click   += (s, e) => ShowPanel(_pnlBrowse);
-            panel.Controls.Add(btnBack);
+            btnBack.Click += (s, e) => ShowPanel(_pnlBrowse);
+            btnRow.Controls.Add(btnBack);
 
+            flow.Controls.Add(btnRow);
+
+            content.Controls.Add(flow);
+            panel.Controls.Add(content);   // Fill
             panel.Controls.Add(header);    // Top — last → topmost
 
             return panel;

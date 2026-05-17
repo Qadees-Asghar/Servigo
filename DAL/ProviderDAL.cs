@@ -78,7 +78,7 @@ namespace SERVIGO.DAL
                   FROM   ServiceProviders sp
                   JOIN   Users             u  ON sp.UserID     = u.UserID
                   JOIN   ServiceCategories sc ON sp.CategoryID = sc.CategoryID
-                  WHERE  sp.IsApproved = 1 AND u.IsActive = 1
+                  WHERE  u.IsActive = 1
                   ORDER  BY u.FullName");
 
         public static DataTable GetAllApprovedByCategory(int categoryID)
@@ -88,7 +88,7 @@ namespace SERVIGO.DAL
                   FROM   ServiceProviders sp
                   JOIN   Users             u  ON sp.UserID     = u.UserID
                   JOIN   ServiceCategories sc ON sp.CategoryID = sc.CategoryID
-                  WHERE  sp.IsApproved = 1 AND u.IsActive = 1
+                  WHERE  u.IsActive = 1
                     AND  sp.CategoryID = @CatID
                   ORDER  BY u.FullName",
                 DatabaseHelper.Param("@CatID", categoryID));
