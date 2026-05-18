@@ -395,12 +395,7 @@ namespace SERVIGO.Forms.Admin
             btnToggle.Location = new Point(16, 9);
             btnToggle.Click   += (s, e) => ToggleUserActive(_dgvUsers);
 
-            var btnDelete = AppTheme.MakeDangerButton("Delete User", 130, 38);
-            btnDelete.Location = new Point(186, 9);
-            btnDelete.Click   += (s, e) => DeleteUser(_dgvUsers);
-
             pnlActions.Controls.Add(btnToggle);
-            pnlActions.Controls.Add(btnDelete);
 
             btnSearch.Click  += (s, e) => LoadUsers(AppTheme.GetText(txtSearch, "Search by name / email…"));
             btnRefresh.Click += (s, e) => LoadUsers();
@@ -449,12 +444,38 @@ namespace SERVIGO.Forms.Admin
         private void DeleteUser(DataGridView dgv)
         {
             if (dgv.CurrentRow == null) return;
-            string uid = dgv.CurrentRow.Cells["UserID"].Value.ToString()!;
-            if (MessageBox.Show($"Permanently delete user {uid}?\nThis cannot be undone.", "Confirm Delete",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            string uid      = dgv.CurrentRow.Cells["UserID"].Value?.ToString() ?? string.Empty;
+            string fullName = dgv.CurrentRow.Cells["FullName"].Value?.ToString() ?? uid;
+
+            if (string.IsNullOrWhiteSpace(uid)) return;
+
+            // Prevent deleting the currently logged-in admin
+            if (uid == SessionManager.CurrentUser?.UserID)
             {
-                UserDAL.DeleteUser(uid);
-                LoadUsers();
+                MessageBox.Show("You cannot delete your own account while logged in.",
+                    "Not Allowed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (MessageBox.Show(
+                    $"Permanently delete \"{fullName}\" ({uid})?\n\n" +
+                    "This will also remove all their bookings, services, and slots.\n" +
+                    "This cannot be undone.",
+                    "Confirm Delete",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            {
+                try
+                {
+                    UserDAL.DeleteUser(uid);
+                    LoadUsers();
+                    MessageBox.Show($"User \"{fullName}\" deleted successfully.",
+                        "Deleted", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Could not delete user:\n\n{ex.Message}",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -507,11 +528,7 @@ namespace SERVIGO.Forms.Admin
             btnReject.Location = new Point(146, 9);
             btnReject.Click   += (s, e) => SetProviderApproval(false);
 
-            var btnDelete = AppTheme.MakeDangerButton("Delete Provider", 160, 38);
-            btnDelete.Location = new Point(266, 9);
-            btnDelete.Click   += (s, e) => DeleteProvider();
-
-            pnlActions.Controls.AddRange(new Control[] { btnApprove, btnReject, btnDelete });
+            pnlActions.Controls.AddRange(new Control[] { btnApprove, btnReject });
 
             panel.Controls.Add(_dgvProviders);
             panel.Controls.Add(pnlActions);
@@ -545,12 +562,28 @@ namespace SERVIGO.Forms.Admin
         private void DeleteProvider()
         {
             if (_dgvProviders.CurrentRow == null) return;
-            int provID = Convert.ToInt32(_dgvProviders.CurrentRow.Cells["ProviderID"].Value);
-            if (MessageBox.Show("Delete this provider?", "Confirm",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            int    provID   = Convert.ToInt32(_dgvProviders.CurrentRow.Cells["ProviderID"].Value);
+            string fullName = _dgvProviders.CurrentRow.Cells["FullName"].Value?.ToString() ?? provID.ToString();
+
+            if (MessageBox.Show(
+                    $"Delete provider \"{fullName}\"?\n\n" +
+                    "This will also remove all their services, time slots, and bookings.\n" +
+                    "This cannot be undone.",
+                    "Confirm Delete",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
             {
-                ProviderDAL.DeleteProvider(provID);
-                LoadProviders();
+                try
+                {
+                    ProviderDAL.DeleteProvider(provID);
+                    LoadProviders();
+                    MessageBox.Show($"Provider \"{fullName}\" deleted successfully.",
+                        "Deleted", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Could not delete provider:\n\n{ex.Message}",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 

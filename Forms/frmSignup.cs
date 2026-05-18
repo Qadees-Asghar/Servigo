@@ -30,7 +30,7 @@ namespace SERVIGO.Forms
         {
             bool show = rbProvider.Checked;
             pnlProviderExt.Visible = show;
-            pnlProviderExt.Height  = show ? 182 : 0;
+            pnlProviderExt.Height  = show ? 80 : 0;   // category only, no description
         }
 
         private void LoadCategories()
@@ -74,11 +74,7 @@ namespace SERVIGO.Forms
             if (rbProvider.Checked)
             {
                 if (cboCategory.SelectedValue == null)
-                { ShowError("Please select a service category."); return; }
-
-                string desc = AppTheme.GetText(txtDescription, "Briefly describe your services…");
-                if (string.IsNullOrWhiteSpace(desc))
-                { ShowError("Please add a description for your services."); return; }
+                { ShowError("Please select your service category."); return; }
             }
 
             try
@@ -89,17 +85,15 @@ namespace SERVIGO.Forms
                 User newUser = roleID == 2
                     ? new CustomerUser(userID, fullName, email, phone, cnic)
                     : new ServiceProviderUser(userID, fullName, email, phone, cnic,
-                          Convert.ToInt32(cboCategory.SelectedValue),
-                          AppTheme.GetText(txtDescription, "Briefly describe your services…"));
+                          Convert.ToInt32(cboCategory.SelectedValue), string.Empty);
 
                 newUser.PasswordHash = PasswordHelper.Hash(password);
                 UserDAL.CreateUser(newUser);
 
                 if (roleID == 3)
                 {
-                    int    catID = Convert.ToInt32(cboCategory.SelectedValue);
-                    string desc  = AppTheme.GetText(txtDescription, "Briefly describe your services…");
-                    ProviderDAL.CreateProvider(catID, userID, desc);
+                    int catID = Convert.ToInt32(cboCategory.SelectedValue);
+                    ProviderDAL.CreateProvider(catID, userID, string.Empty);
                 }
 
                 lblUserID.Text =

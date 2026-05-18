@@ -131,6 +131,25 @@ namespace SERVIGO.Forms.Customer
             _pnlSidebar.Controls.Add(btnNotif);
             _pnlSidebar.Controls.Add(_lblBadge);
 
+            // Delete Account button
+            var btnDeleteAcct = new Button
+            {
+                Text      = "🗑  Delete Account",
+                Size      = new Size(196, 38),
+                Location  = new Point(22, 0),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.Transparent,
+                ForeColor = AppTheme.Danger,
+                Font      = AppTheme.FontSmall,
+                Cursor    = Cursors.Hand,
+                Anchor    = AnchorStyles.Bottom | AnchorStyles.Left
+            };
+            btnDeleteAcct.FlatAppearance.BorderSize = 1;
+            btnDeleteAcct.FlatAppearance.BorderColor = AppTheme.Danger;
+            btnDeleteAcct.FlatAppearance.MouseOverBackColor = AppTheme.DangerDim;
+            btnDeleteAcct.Click += (s, e) => DeleteMyAccount();
+            _pnlSidebar.Controls.Add(btnDeleteAcct);
+
             var btnLogout = new Button
             {
                 Text      = "⏻  Logout",
@@ -152,7 +171,10 @@ namespace SERVIGO.Forms.Customer
             };
             _pnlSidebar.Controls.Add(btnLogout);
             _pnlSidebar.Resize += (s, e) =>
-                btnLogout.Location = new Point(22, _pnlSidebar.Height - 60);
+            {
+                btnLogout.Location     = new Point(22, _pnlSidebar.Height - 60);
+                btnDeleteAcct.Location = new Point(22, _pnlSidebar.Height - 106);
+            };
         }
 
         private Button MakeNavBtn(string icon, string label, int y)
@@ -742,6 +764,40 @@ namespace SERVIGO.Forms.Customer
         private static Label FieldLabel(string text, Point loc)
             => new() { Text = text, Font = AppTheme.FontBodyBold, ForeColor = AppTheme.TextDark,
                         AutoSize = true, Location = loc };
+
+        private void DeleteMyAccount()
+        {
+            var result = MessageBox.Show(
+                "Are you sure you want to permanently delete your account?\n\n" +
+                "All your bookings and data will be removed.\nThis cannot be undone.",
+                "Delete Account",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (result != DialogResult.Yes) return;
+
+            // Double confirmation
+            var confirm = MessageBox.Show(
+                "This is your last chance — are you absolutely sure?",
+                "Final Confirmation",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Stop);
+
+            if (confirm != DialogResult.Yes) return;
+
+            try
+            {
+                string uid = SessionManager.CurrentUser!.UserID;
+                UserDAL.DeleteUser(uid);
+                SessionManager.Logout();
+
+                MessageBox.Show("Your account has been deleted.",
+                    "Account Deleted", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Close();
+            }
+            catch (Exception ex)
+            {
+                ShowError($"Could not delete account:\n{ex.Message}");
+            }
+        }
 
         private void ShowError(string msg)
             => MessageBox.Show(msg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);

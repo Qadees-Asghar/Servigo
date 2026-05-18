@@ -1,3 +1,4 @@
+using Microsoft.Data.SqlClient;
 using SERVIGO.Helpers;
 using SERVIGO.Models;
 using System.Data;
@@ -37,9 +38,40 @@ namespace SERVIGO.DAL
 
         public static void DeleteProvider(int providerID)
         {
-            DatabaseHelper.ExecuteNonQuery(
-                "DELETE FROM ServiceProviders WHERE ProviderID = @PID",
-                DatabaseHelper.Param("@PID", providerID));
+            // Delete child records first before removing the provider row
+            using var conn = DatabaseHelper.GetConnection();
+            conn.Open();
+            using var tx = conn.BeginTransaction();
+            try
+            {
+                void Exec(string sql)
+                {
+                    using var cmd = new SqlCommand(sql, conn, tx);
+                    cmd.Parameters.AddWithValue("@PID", providerID);
+                    cmd.ExecuteNonQuery();
+                }
+
+                // 1. Bookings on this provider's time slots
+                Exec(@"DELETE b FROM Bookings b
+                       JOIN TimeSlots ts ON b.SlotID = ts.SlotID
+                       WHERE ts.ProviderID = @PID");
+
+                // 2. Services offered by this provider
+                Exec("DELETE FROM Services WHERE ProviderID = @PID");
+
+                // 3. Time slots of this provider
+                Exec("DELETE FROM TimeSlots WHERE ProviderID = @PID");
+
+                // 4. ServiceProviders record
+                Exec("DELETE FROM ServiceProviders WHERE ProviderID = @PID");
+
+                tx.Commit();
+            }
+            catch
+            {
+                tx.Rollback();
+                throw;
+            }
         }
 
         public static int? GetProviderIDByUserID(string userID)

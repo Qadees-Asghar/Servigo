@@ -143,6 +143,25 @@ namespace SERVIGO.Forms.Provider
             _pnlSidebar.Controls.Add(btnNotif);
             _pnlSidebar.Controls.Add(_lblBadge);
 
+            // Delete Account button
+            var btnDeleteAcct = new Button
+            {
+                Text      = "🗑  Delete Account",
+                Size      = new Size(196, 38),
+                Location  = new Point(22, 0),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.Transparent,
+                ForeColor = AppTheme.Danger,
+                Font      = AppTheme.FontSmall,
+                Cursor    = Cursors.Hand,
+                Anchor    = AnchorStyles.Bottom | AnchorStyles.Left
+            };
+            btnDeleteAcct.FlatAppearance.BorderSize = 1;
+            btnDeleteAcct.FlatAppearance.BorderColor = AppTheme.Danger;
+            btnDeleteAcct.FlatAppearance.MouseOverBackColor = AppTheme.DangerDim;
+            btnDeleteAcct.Click += (s, e) => DeleteMyAccount();
+            _pnlSidebar.Controls.Add(btnDeleteAcct);
+
             var btnLogout = new Button
             {
                 Text      = "⏻  Logout",
@@ -164,7 +183,10 @@ namespace SERVIGO.Forms.Provider
             };
             _pnlSidebar.Controls.Add(btnLogout);
             _pnlSidebar.Resize += (s, e) =>
-                btnLogout.Location = new Point(22, _pnlSidebar.Height - 60);
+            {
+                btnLogout.Location     = new Point(22, _pnlSidebar.Height - 60);
+                btnDeleteAcct.Location = new Point(22, _pnlSidebar.Height - 106);
+            };
         }
 
         private Button MakeNavBtn(string icon, string label, int y)
@@ -332,11 +354,26 @@ namespace SERVIGO.Forms.Provider
         //  MY SERVICES
         // ──────────────────────────────────────────────────────────────────────
 
-        private DataGridView _dgvServices = null!;
-        private TextBox _txtSvcName  = null!;
-        private TextBox _txtSvcDesc  = null!;
-        private TextBox _txtSvcPrice = null!;
-        private TextBox _txtSvcDur   = null!;
+        // Predefined services per category — provider can only pick from these
+        private static readonly Dictionary<string, string[]> _serviceOptions
+            = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["AC Repair"]      = ["AC Installation", "AC Gas Refill", "AC Maintenance", "AC Deep Cleaning", "AC Repair"],
+            ["AC Services"]    = ["AC Installation", "AC Gas Refill", "AC Maintenance", "AC Deep Cleaning", "AC Repair"],
+            ["Plumbing"]       = ["Pipe Repair", "Drain Cleaning", "Leak Fixing", "Pipe Installation", "Water Heater Repair", "Tap Replacement"],
+            ["Electrician"]    = ["Wiring", "Circuit Repair", "Fan Installation", "Light Fitting", "Switchboard Repair", "Generator Service"],
+            ["Electrical"]     = ["Wiring", "Circuit Repair", "Fan Installation", "Light Fitting", "Switchboard Repair", "Generator Service"],
+            ["Painting"]       = ["Interior Painting", "Exterior Painting", "Wall Texture", "Wood Painting", "Ceiling Painting"],
+            ["Cleaning"]       = ["Deep Cleaning", "Sofa Cleaning", "Carpet Cleaning", "Kitchen Cleaning", "Bathroom Cleaning"],
+            ["Carpentry"]      = ["Furniture Repair", "Door Fitting", "Cabinet Making", "Wood Work", "Shelf Installation"],
+            ["Gardening"]      = ["Lawn Mowing", "Tree Trimming", "Plant Care", "Garden Design", "Pest Spray"],
+            ["Pest Control"]   = ["Cockroach Treatment", "Termite Treatment", "Rodent Control", "Mosquito Spray", "Bed Bug Treatment"],
+        };
+
+        private DataGridView _dgvServices  = null!;
+        private ComboBox     _cboSvcName   = null!;   // dropdown — no free typing
+        private TextBox      _txtSvcDesc   = null!;
+        private TextBox      _txtSvcPrice  = null!;
 
         private Panel BuildServicesPanel()
         {
@@ -359,31 +396,29 @@ namespace SERVIGO.Forms.Provider
             });
 
             // Field labels row
-            var lblName = new Label { Text = "Name", Font = AppTheme.FontSmall, ForeColor = AppTheme.TextMuted, AutoSize = true, Location = new Point(20, 38) };
-            var lblDesc = new Label { Text = "Description", Font = AppTheme.FontSmall, ForeColor = AppTheme.TextMuted, AutoSize = true, Location = new Point(232, 38) };
-            var lblPrc  = new Label { Text = "Price (PKR)", Font = AppTheme.FontSmall, ForeColor = AppTheme.TextMuted, AutoSize = true, Location = new Point(506, 38) };
-            var lblDur  = new Label { Text = "Duration (min)", Font = AppTheme.FontSmall, ForeColor = AppTheme.TextMuted, AutoSize = true, Location = new Point(618, 38) };
-            card.Controls.Add(lblName); card.Controls.Add(lblDesc); card.Controls.Add(lblPrc); card.Controls.Add(lblDur);
+            var lblName = new Label { Text = "Service Type", Font = AppTheme.FontSmall, ForeColor = AppTheme.TextMuted, AutoSize = true, Location = new Point(20, 38) };
+            var lblDesc = new Label { Text = "Description (optional)", Font = AppTheme.FontSmall, ForeColor = AppTheme.TextMuted, AutoSize = true, Location = new Point(260, 38) };
+            var lblPrc  = new Label { Text = "Price (PKR)", Font = AppTheme.FontSmall, ForeColor = AppTheme.TextMuted, AutoSize = true, Location = new Point(546, 38) };
+            card.Controls.Add(lblName); card.Controls.Add(lblDesc); card.Controls.Add(lblPrc);
 
-            // Input fields row — below labels
-            _txtSvcName  = AppTheme.MakeTextBox(200, 36); _txtSvcName.Location  = new Point(20, 56);
-            _txtSvcDesc  = AppTheme.MakeTextBox(260, 36); _txtSvcDesc.Location  = new Point(232, 56);
-            _txtSvcPrice = AppTheme.MakeTextBox(100, 36); _txtSvcPrice.Location = new Point(506, 56);
-            _txtSvcDur   = AppTheme.MakeTextBox(140, 36); _txtSvcDur.Location   = new Point(618, 56);
+            // Service name — DROPDOWN, not free text
+            _cboSvcName = AppTheme.MakeComboBox(220, 36);
+            _cboSvcName.Location = new Point(20, 56);
+            PopulateServiceDropdown();
 
-            AppTheme.AddPlaceholder(_txtSvcName,  "Service name…");
-            AppTheme.AddPlaceholder(_txtSvcDesc,  "Short description…");
-            AppTheme.AddPlaceholder(_txtSvcPrice, "Price (PKR)");
-            AppTheme.AddPlaceholder(_txtSvcDur,   "Duration (min)");
+            _txtSvcDesc  = AppTheme.MakeTextBox(270, 36); _txtSvcDesc.Location  = new Point(256, 56);
+            _txtSvcPrice = AppTheme.MakeTextBox(110, 36); _txtSvcPrice.Location = new Point(542, 56);
 
-            var btnAdd = AppTheme.MakeSuccessButton("+ Add Service", 140, 36);
-            btnAdd.Location = new Point(770, 56);
+            AppTheme.AddPlaceholder(_txtSvcDesc,  "e.g. Includes labour and parts…");
+            AppTheme.AddPlaceholder(_txtSvcPrice, "0.00");
+
+            var btnAdd = AppTheme.MakeSuccessButton("+ Add Service", 150, 36);
+            btnAdd.Location = new Point(666, 56);
             btnAdd.Click   += BtnAddService_Click;
 
-            card.Controls.Add(_txtSvcName);
+            card.Controls.Add(_cboSvcName);
             card.Controls.Add(_txtSvcDesc);
             card.Controls.Add(_txtSvcPrice);
-            card.Controls.Add(_txtSvcDur);
             card.Controls.Add(btnAdd);
 
             _dgvServices = AppTheme.MakeDataGrid();
@@ -407,6 +442,28 @@ namespace SERVIGO.Forms.Provider
             return panel;
         }
 
+        // Populates the service name dropdown based on this provider's registered category
+        private void PopulateServiceDropdown()
+        {
+            _cboSvcName.Items.Clear();
+            string category = string.Empty;
+            if (SessionManager.CurrentUser is ServiceProviderUser sp)
+                category = sp.CategoryName;
+
+            if (_serviceOptions.TryGetValue(category, out string[]? options))
+            {
+                _cboSvcName.Items.AddRange(options);
+            }
+            else
+            {
+                // Fallback — generic options if category isn't mapped yet
+                _cboSvcName.Items.AddRange(new[] { "General Service", "Repair", "Installation",
+                                                    "Maintenance", "Inspection" });
+            }
+            if (_cboSvcName.Items.Count > 0)
+                _cboSvcName.SelectedIndex = 0;
+        }
+
         private void LoadServices()
         {
             try
@@ -418,19 +475,16 @@ namespace SERVIGO.Forms.Provider
 
         private void BtnAddService_Click(object? sender, EventArgs e)
         {
-            string name  = AppTheme.GetText(_txtSvcName,  "Service name…");
-            string desc  = AppTheme.GetText(_txtSvcDesc,  "Short description…");
-            string price = AppTheme.GetText(_txtSvcPrice, "Price (PKR)");
-            string dur   = AppTheme.GetText(_txtSvcDur,   "Duration (min)");
+            string name  = _cboSvcName.SelectedItem?.ToString() ?? string.Empty;
+            string desc  = AppTheme.GetText(_txtSvcDesc,  "e.g. Includes labour and parts…");
+            string price = AppTheme.GetText(_txtSvcPrice, "0.00");
 
-            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(price) ||
-                string.IsNullOrWhiteSpace(dur))
-            { ShowInfo("Name, Price, and Duration are required."); return; }
+            if (string.IsNullOrWhiteSpace(name))
+            { ShowInfo("Please select a service type."); return; }
 
-            if (!decimal.TryParse(price, out decimal priceVal) || priceVal <= 0)
-            { ShowInfo("Enter a valid price."); return; }
-            if (!int.TryParse(dur, out int durVal) || durVal <= 0)
-            { ShowInfo("Enter a valid duration in minutes."); return; }
+            if (string.IsNullOrWhiteSpace(price) ||
+                !decimal.TryParse(price, out decimal priceVal) || priceVal <= 0)
+            { ShowInfo("Enter a valid price greater than 0."); return; }
 
             try
             {
@@ -440,16 +494,15 @@ namespace SERVIGO.Forms.Provider
                     ServiceName     = name,
                     Description     = desc,
                     Price           = priceVal,
-                    DurationMinutes = durVal
+                    DurationMinutes = 0   // duration removed — situational
                 };
                 ServiceDAL.CreateService(svc);
                 LoadServices();
 
-                // Clear fields
-                AppTheme.AddPlaceholder(_txtSvcName,  "Service name…");
-                AppTheme.AddPlaceholder(_txtSvcDesc,  "Short description…");
-                AppTheme.AddPlaceholder(_txtSvcPrice, "Price (PKR)");
-                AppTheme.AddPlaceholder(_txtSvcDur,   "Duration (min)");
+                // Reset fields
+                if (_cboSvcName.Items.Count > 0) _cboSvcName.SelectedIndex = 0;
+                AppTheme.AddPlaceholder(_txtSvcDesc,  "e.g. Includes labour and parts…");
+                AppTheme.AddPlaceholder(_txtSvcPrice, "0.00");
             }
             catch (Exception ex) { ShowError(ex.Message); }
         }
@@ -799,6 +852,40 @@ namespace SERVIGO.Forms.Provider
         private static Label FieldLabel(string text, Point loc)
             => new() { Text = text, Font = AppTheme.FontBodyBold, ForeColor = AppTheme.TextDark,
                         AutoSize = true, Location = loc };
+
+        private void DeleteMyAccount()
+        {
+            var result = MessageBox.Show(
+                "Are you sure you want to permanently delete your account?\n\n" +
+                "All your services, time slots, bookings, and data will be removed.\n" +
+                "This cannot be undone.",
+                "Delete Account",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (result != DialogResult.Yes) return;
+
+            var confirm = MessageBox.Show(
+                "This is your last chance — are you absolutely sure?",
+                "Final Confirmation",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Stop);
+
+            if (confirm != DialogResult.Yes) return;
+
+            try
+            {
+                string uid = SessionManager.CurrentUser!.UserID;
+                UserDAL.DeleteUser(uid);
+                SessionManager.Logout();
+
+                MessageBox.Show("Your account has been deleted.",
+                    "Account Deleted", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Close();
+            }
+            catch (Exception ex)
+            {
+                ShowError($"Could not delete account:\n{ex.Message}");
+            }
+        }
 
         private void ShowError(string msg)
             => MessageBox.Show(msg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);

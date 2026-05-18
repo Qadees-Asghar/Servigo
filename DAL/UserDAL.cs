@@ -119,9 +119,56 @@ namespace SERVIGO.DAL
 
         public static void DeleteUser(string userID)
         {
-            DatabaseHelper.ExecuteNonQuery(
-                "DELETE FROM Users WHERE UserID = @UID",
-                DatabaseHelper.Param("@UID", userID));
+            // Must delete child records first (innermost → outermost) to satisfy FK constraints.
+            // Order: Notifications → Bookings → Services → AvailabilitySlots → ServiceProviders → Users
+
+            using var conn = DatabaseHelper.GetConnection();
+            conn.Open();
+            using var tx = conn.BeginTransaction();
+            try
+            {
+                void Exec(string sql)
+                {
+                    using var cmd = new SqlCommand(sql, conn, tx);
+                    cmd.Parameters.AddWithValue("@UID", userID);
+                    cmd.ExecuteNonQuery();
+                }
+
+                // 1. Notifications belong to this user
+                Exec("DELETE FROM Notifications WHERE UserID = @UID");
+
+                // 2. Bookings where this user is the customer
+                Exec("DELETE FROM Bookings WHERE CustomerID = @UID");
+
+                // 3. Bookings linked to this provider's time slots
+                Exec(@"DELETE b FROM Bookings b
+                       JOIN TimeSlots        ts ON b.SlotID    = ts.SlotID
+                       JOIN ServiceProviders sp ON ts.ProviderID = sp.ProviderID
+                       WHERE sp.UserID = @UID");
+
+                // 4. Services offered by this provider
+                Exec(@"DELETE s FROM Services s
+                       JOIN ServiceProviders sp ON s.ProviderID = sp.ProviderID
+                       WHERE sp.UserID = @UID");
+
+                // 5. Time slots of this provider
+                Exec(@"DELETE ts FROM TimeSlots ts
+                       JOIN ServiceProviders sp ON ts.ProviderID = sp.ProviderID
+                       WHERE sp.UserID = @UID");
+
+                // 6. ServiceProviders record
+                Exec("DELETE FROM ServiceProviders WHERE UserID = @UID");
+
+                // 7. Finally delete the user
+                Exec("DELETE FROM Users WHERE UserID = @UID");
+
+                tx.Commit();
+            }
+            catch
+            {
+                tx.Rollback();
+                throw;   // re-throw so the caller can show the error
+            }
         }
 
         public static void SetActiveStatus(string userID, bool isActive)

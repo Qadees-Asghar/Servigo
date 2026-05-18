@@ -267,10 +267,8 @@ namespace SERVIGO.Forms
             pnlProviderExt.Margin    = new Padding(0);
             pnlProviderExt.Controls.Add(lblCatHdr);
             pnlProviderExt.Controls.Add(cboCategory);
-            pnlProviderExt.Controls.Add(lblDescHdr);
-            pnlProviderExt.Controls.Add(txtDescription);
 
-            lblCatHdr.Text      = "Service Category";
+            lblCatHdr.Text      = "Your Service Category";
             lblCatHdr.Font      = AppTheme.FontBodyBold;
             lblCatHdr.ForeColor = AppTheme.TextLight;
             lblCatHdr.AutoSize  = true;
@@ -284,19 +282,9 @@ namespace SERVIGO.Forms
             cboCategory.DropDownStyle = ComboBoxStyle.DropDownList;
             cboCategory.Location      = new Point(0, 24);
 
-            lblDescHdr.Text      = "About / Description";
-            lblDescHdr.Font      = AppTheme.FontBodyBold;
-            lblDescHdr.ForeColor = AppTheme.TextLight;
-            lblDescHdr.AutoSize  = true;
-            lblDescHdr.Location  = new Point(0, 78);
-
-            txtDescription.Location    = new Point(0, 102);
-            txtDescription.Size        = new Size(400, 68);
-            txtDescription.Font        = AppTheme.FontInput;
-            txtDescription.BackColor   = AppTheme.Surface2;
-            txtDescription.ForeColor   = AppTheme.TextLight;
-            txtDescription.BorderStyle = BorderStyle.FixedSingle;
-            txtDescription.Multiline   = true;
+            // Description hidden — provider adds per-service description instead
+            lblDescHdr.Visible      = false;
+            txtDescription.Visible  = false;
 
             // ── Error + submit ────────────────────────────────────────────────
             lblError.Text      = string.Empty;
