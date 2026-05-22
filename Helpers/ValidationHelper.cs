@@ -9,8 +9,8 @@ namespace SERVIGO.Helpers
         {
             error = string.Empty;
             if (string.IsNullOrWhiteSpace(value))        { error = "CNIC is required.";                      return false; }
-            if (!Regex.IsMatch(value, @"^\d+$"))         { error = "CNIC must contain digits only.";         return false; }
-            if (value.Length != 13)                      { error = "CNIC must be exactly 13 digits.";        return false; }
+            if (!Regex.IsMatch(value, @"^\d+$"))         { error = "CNIC is invalid.";         return false; }
+            if (value.Length != 13)                      { error = "CNIC is invalid.";        return false; }
             return true;
         }
 
@@ -19,9 +19,9 @@ namespace SERVIGO.Helpers
         {
             error = string.Empty;
             if (string.IsNullOrWhiteSpace(value))        { error = "Phone number is required.";              return false; }
-            if (!Regex.IsMatch(value, @"^\d+$"))         { error = "Phone must contain digits only.";        return false; }
-            if (value.Length != 11)                      { error = "Phone must be exactly 11 digits.";       return false; }
-            if (!value.StartsWith("0"))                  { error = "Phone must start with 0 (e.g. 03XX…)."; return false; }
+            if (!Regex.IsMatch(value, @"^\d+$"))         { error = "Phone number is invalid.";   return false; }
+            if (value.Length != 11)                      { error = "Phone number is invalid.";   return false; }
+            if (!value.StartsWith("0"))                  { error = "Phone number is invalid.";   return false; }
             return true;
         }
 

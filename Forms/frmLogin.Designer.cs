@@ -150,7 +150,7 @@ namespace SERVIGO.Forms
             txtEmail.Margin      = new Padding(0, 0, 0, 14);
 
             // lblUserIDHdr
-            lblUserIDHdr.Text      = "User ID  (generated at signup)";
+            lblUserIDHdr.Text      = "User ID";
             lblUserIDHdr.Font      = AppTheme.FontBodyBold;
             lblUserIDHdr.ForeColor = AppTheme.TextLight;
             lblUserIDHdr.AutoSize  = true;

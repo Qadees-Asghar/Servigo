@@ -97,15 +97,14 @@ namespace SERVIGO.Forms.Admin
                 Text      = SessionManager.CurrentUser?.FullName ?? "Admin",
                 Font      = AppTheme.FontBodyBold,
                 ForeColor = Color.White,
-                AutoSize  = false,
-                Size      = new Size(196, 30),
+                AutoSize  = true,
                 Location  = new Point(22, 100),
                 TextAlign = ContentAlignment.MiddleLeft
             };
 
             var divider = new Panel
             {
-                Location  = new Point(20, 142),
+                Location  = new Point(20, 138),
                 Size      = new Size(196, 1),
                 BackColor = Color.FromArgb(50, 80, 120)
             };
@@ -116,7 +115,7 @@ namespace SERVIGO.Forms.Admin
             _pnlSidebar.Controls.Add(divider);
 
             // Nav buttons
-            int y = 164;
+            int y = 160;
             var navItems = new (string Icon, string Label, Action Click)[]
             {
                 ("⊞", "Dashboard",         () => { LoadDashboardStats(); ShowPanel(_pnlDashboard); }),
@@ -491,7 +490,7 @@ namespace SERVIGO.Forms.Admin
         private Panel BuildProvidersPanel()
         {
             var panel = new Panel { BackColor = AppTheme.Background };
-            var head  = MakePanelHeader("Manage Providers", "Grant or remove the Verified badge. Providers can work without it.");
+            var head  = MakePanelHeader("Manage Providers", "Grant or remove the Verified badge, or activate / deactivate provider accounts.");
             head.Dock = DockStyle.Top;
 
             var toolbar = new Panel
@@ -531,7 +530,11 @@ namespace SERVIGO.Forms.Admin
             btnReject.Location = new Point(146, 9);
             btnReject.Click   += (s, e) => SetProviderApproval(false);
 
-            pnlActions.Controls.AddRange(new Control[] { btnApprove, btnReject });
+            var btnToggle = AppTheme.MakeOutlineButton("Toggle Active", 160, 38);
+            btnToggle.Location = new Point(290, 9);
+            btnToggle.Click   += (s, e) => ToggleUserActive(_dgvProviders);
+
+            pnlActions.Controls.AddRange(new Control[] { btnApprove, btnReject, btnToggle });
 
             panel.Controls.Add(_dgvProviders);
             panel.Controls.Add(pnlActions);

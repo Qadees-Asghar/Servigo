@@ -231,7 +231,7 @@ namespace SERVIGO.Theme
                 AllowUserToDeleteRows     = false,
                 ReadOnly                  = true,
                 SelectionMode             = DataGridViewSelectionMode.FullRowSelect,
-                AutoSizeColumnsMode       = DataGridViewAutoSizeColumnsMode.Fill,
+                AutoSizeColumnsMode       = DataGridViewAutoSizeColumnsMode.AllCells,
                 Font                      = FontGrid,
                 RowTemplate               = { Height = 40 },
                 EnableHeadersVisualStyles = false

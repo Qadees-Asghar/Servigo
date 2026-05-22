@@ -44,7 +44,7 @@ namespace SERVIGO.DAL
 
         public static DataTable GetByProvider(int providerID)
             => DatabaseHelper.ExecuteQuery(
-                @"SELECT ServiceID, ServiceName, Description, Price, DurationMinutes, IsActive
+                @"SELECT ServiceID, ServiceName, Description, Price, IsActive
                   FROM   Services
                   WHERE  ProviderID = @PID
                   ORDER  BY ServiceName",
@@ -52,7 +52,7 @@ namespace SERVIGO.DAL
 
         public static DataTable GetActiveByProvider(int providerID)
             => DatabaseHelper.ExecuteQuery(
-                @"SELECT ServiceID, ServiceName, Description, Price, DurationMinutes
+                @"SELECT ServiceID, ServiceName, Description, Price
                   FROM   Services
                   WHERE  ProviderID = @PID AND IsActive = 1
                   ORDER  BY ServiceName",
@@ -62,7 +62,7 @@ namespace SERVIGO.DAL
         {
             string sql = @"
                 SELECT s.ServiceID, s.ServiceName, s.Description, s.Price,
-                       s.DurationMinutes, u.FullName AS ProviderName,
+                       u.FullName AS ProviderName,
                        sc.CategoryName, sp.ProviderID, sp.AverageRating
                 FROM   Services s
                 JOIN   ServiceProviders sp ON s.ProviderID  = sp.ProviderID

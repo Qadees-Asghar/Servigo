@@ -102,11 +102,10 @@ namespace SERVIGO.Forms.Customer
             int y = 160;
             var navItems = new (string Icon, string Label, Action Click)[]
             {
-                ("🏠", "Home",             () => { ShowPanel(_pnlHome);   }),
-                ("🔍", "Browse Services",  () => { LoadBrowse();  ShowPanel(_pnlBrowse); }),
-                ("📋", "My Bookings",      () => { LoadMyBookings(); ShowPanel(_pnlMyBks); }),
-                ("⭐", "Reviews",          () => { LoadReviews(); ShowPanel(_pnlReviews); }),
-                ("📝", "Feedback",         () => { LoadMyFeedback(); ShowPanel(_pnlFeedback); }),
+                ("🏠", "Home",        () => { ShowPanel(_pnlHome);              }),
+                ("📋", "My Bookings", () => { LoadMyBookings(); ShowPanel(_pnlMyBks);    }),
+                ("⭐", "Reviews",     () => { LoadReviews();    ShowPanel(_pnlReviews);  }),
+                ("📝", "Feedback",    () => { LoadMyFeedback(); ShowPanel(_pnlFeedback); }),
             };
 
             foreach (var (icon, label, click) in navItems)
@@ -277,20 +276,39 @@ namespace SERVIGO.Forms.Customer
             });
             flow.Controls.Add(new Label
             {
-                Text      = "What service are you looking for today?",
+                Text      = "Choose a category to explore services:",
                 Font      = AppTheme.FontSubtitle,
                 ForeColor = AppTheme.TextMuted,
                 AutoSize  = true,
-                Margin    = new Padding(0, 0, 0, 44)
+                Margin    = new Padding(0, 0, 0, 32)
             });
 
-            // Quick action cards
-            var services = new[]
+            // Icon map for known categories
+            var iconMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                ("⚡", "Electrician"), ("🔧", "Plumber"), ("🚗", "Mechanic"),
-                ("🧺", "Laundry"), ("🎨", "Painter"), ("🪚", "Carpenter"),
-                ("🧹", "Cleaner"), ("❄️", "AC Repair")
+                { "Electrician",  "⚡" }, { "Electricians",  "⚡" }, { "Electrical",   "⚡" },
+                { "Plumber",      "🔧" }, { "Plumbing",      "🔧" },
+                { "Mechanic",     "🚗" }, { "Mechanics",     "🚗" }, { "Auto Repair",  "🚗" },
+                { "Laundry",      "🧺" },
+                { "Painter",      "🎨" }, { "Painting",      "🎨" },
+                { "Carpenter",    "🪚" }, { "Carpentry",     "🪚" },
+                { "Cleaner",      "🧹" }, { "Cleaning",      "🧹" }, { "House Cleaning","🧹" },
+                { "AC Repair",    "❄️" }, { "AC",            "❄️" }, { "Air Conditioning","❄️" },
+                { "IT Support",   "💻" }, { "IT",            "💻" },
+                { "Gardening",    "🌱" }, { "Garden",        "🌱" },
+                { "Security",     "🔒" },
+                { "Photography",  "📷" },
+                { "Catering",     "🍽" },
+                { "Moving",       "📦" }, { "Movers",        "📦" },
+                { "Tutoring",     "📚" }, { "Tutor",         "📚" },
+                { "Pest Control", "🐛" },
+                { "Roofing",      "🏠" },
             };
+
+            // Load ALL categories dynamically from DB
+            DataTable cats;
+            try   { cats = ProviderDAL.GetCategories(); }
+            catch { cats = new DataTable();              }
 
             var cardRow = new FlowLayoutPanel
             {
@@ -300,11 +318,15 @@ namespace SERVIGO.Forms.Customer
                 BackColor     = Color.Transparent
             };
 
-            foreach (var (icon, name) in services)
+            foreach (DataRow row in cats.Rows)
             {
+                int    catID   = Convert.ToInt32(row["CategoryID"]);
+                string catName = row["CategoryName"].ToString()!;
+                string icon    = iconMap.TryGetValue(catName, out var ic) ? ic : "🛠";
+
                 var card = new Button
                 {
-                    Text      = $"{icon}\n{name}",
+                    Text      = $"{icon}\n{catName}",
                     Size      = new Size(130, 110),
                     FlatStyle = FlatStyle.Flat,
                     BackColor = AppTheme.CardBg,
@@ -314,11 +336,21 @@ namespace SERVIGO.Forms.Customer
                     Margin    = new Padding(0, 0, 16, 16),
                     TextAlign = ContentAlignment.MiddleCenter
                 };
-                card.FlatAppearance.BorderColor = AppTheme.Border;
-                card.FlatAppearance.BorderSize  = 1;
-                card.FlatAppearance.MouseOverBackColor = Color.FromArgb(235, 242, 252);
+                card.FlatAppearance.BorderColor         = AppTheme.Border;
+                card.FlatAppearance.BorderSize          = 1;
+                card.FlatAppearance.MouseOverBackColor  = Color.FromArgb(235, 242, 252);
+
+                int    cID   = catID;
+                string cName = catName;
                 card.Click += (s, e) =>
                 {
+                    _currentCategoryID   = cID;
+                    _lblBrowseTitle.Text = $"Showing services in:  {cName}";
+                    // Sync the combo — suppress its SelectedIndexChanged so we don't double-load
+                    foreach (DataRowView item in _cboCat.Items)
+                        if (item["CategoryID"] != DBNull.Value &&
+                            Convert.ToInt32(item["CategoryID"]) == cID)
+                        { _cboCat.SelectedItem = item; break; }
                     LoadBrowse();
                     ShowPanel(_pnlBrowse);
                 };
@@ -327,10 +359,16 @@ namespace SERVIGO.Forms.Customer
 
             flow.Controls.Add(cardRow);
 
-            var btnBrowse = AppTheme.MakePrimaryButton("Browse All Services →", 260, 48);
-            btnBrowse.Margin = new Padding(0, 20, 0, 0);
-            btnBrowse.Click += (s, e) => { LoadBrowse(); ShowPanel(_pnlBrowse); };
-            flow.Controls.Add(btnBrowse);
+            var btnBrowseAll = AppTheme.MakePrimaryButton("Browse All Services →", 260, 48);
+            btnBrowseAll.Margin = new Padding(0, 20, 0, 0);
+            btnBrowseAll.Click += (s, e) =>
+            {
+                _currentCategoryID   = null;
+                _lblBrowseTitle.Text = "Showing all services";
+                LoadBrowse();
+                ShowPanel(_pnlBrowse);
+            };
+            flow.Controls.Add(btnBrowseAll);
 
             panel.Controls.Add(flow);
             return panel;
@@ -340,15 +378,36 @@ namespace SERVIGO.Forms.Customer
         //  BROWSE SERVICES
         // ──────────────────────────────────────────────────────────────────────
 
-        private DataGridView _dgvServices = null!;
-        private TextBox      _txtSearch   = null!;
-        private ComboBox     _cboCat      = null!;
+        private DataGridView _dgvServices      = null!;
+        private TextBox      _txtSearch        = null!;
+        private ComboBox     _cboCat           = null!;
+        private int?         _currentCategoryID;
+        private Label        _lblBrowseTitle   = null!;
 
         private Panel BuildBrowsePanel()
         {
-            var panel  = new Panel { BackColor = AppTheme.Background };
-            var header = MakePanelHeader("Browse Services",
-                "Search by service name or filter by category.");
+            var panel = new Panel { BackColor = AppTheme.Background };
+
+            // Dynamic header — store subtitle label reference so we can update it
+            var header = new Panel { Height = 110, BackColor = AppTheme.CardBg, Dock = DockStyle.Top };
+            header.Controls.Add(new Label
+            {
+                Text     = "Services",
+                Font     = AppTheme.FontTitle,
+                ForeColor = AppTheme.Primary,
+                AutoSize = true,
+                Location = new Point(28, 20)
+            });
+            _lblBrowseTitle = new Label
+            {
+                Text      = "Select a category from Home to view services",
+                Font      = AppTheme.FontBody,
+                ForeColor = AppTheme.TextMuted,
+                AutoSize  = true,
+                Location  = new Point(28, 68)
+            };
+            header.Controls.Add(_lblBrowseTitle);
+            header.Controls.Add(new Panel { Dock = DockStyle.Bottom, Height = 3, BackColor = AppTheme.Accent });
 
             var toolbar = new Panel
             {
@@ -356,21 +415,35 @@ namespace SERVIGO.Forms.Customer
                 BackColor = AppTheme.CardBg, Padding = new Padding(16, 10, 16, 10)
             };
 
-            _txtSearch = AppTheme.MakeTextBox(240, 40);
+            _txtSearch = AppTheme.MakeTextBox(220, 40);
             AppTheme.AddPlaceholder(_txtSearch, "Search services…");
             _txtSearch.Location = new Point(16, 12);
 
-            _cboCat = AppTheme.MakeComboBox(200, 40);
-            _cboCat.Location = new Point(268, 12);
+            _cboCat = AppTheme.MakeComboBox(190, 40);
+            _cboCat.Location = new Point(248, 12);
             LoadCategoriesToFilter();
+            _cboCat.SelectedIndexChanged += (s, e) =>
+            {
+                _currentCategoryID  = _cboCat.SelectedValue is DBNull or null
+                                      ? null : (int?)Convert.ToInt32(_cboCat.SelectedValue);
+                _lblBrowseTitle.Text = _currentCategoryID == null
+                                      ? "Showing all services"
+                                      : $"Showing services in:  {_cboCat.Text}";
+                LoadBrowse();
+            };
 
             var btnSearch = AppTheme.MakePrimaryButton("Search", 100, 40);
-            btnSearch.Location = new Point(480, 12);
+            btnSearch.Location = new Point(450, 12);
             btnSearch.Click   += (s, e) => LoadBrowse();
+
+            var btnBackHome = AppTheme.MakeOutlineButton("Go back to Home", 210, 40);
+            btnBackHome.Location = new Point(562, 12);
+            btnBackHome.Click   += (s, e) => ShowPanel(_pnlHome);
 
             toolbar.Controls.Add(_txtSearch);
             toolbar.Controls.Add(_cboCat);
             toolbar.Controls.Add(btnSearch);
+            toolbar.Controls.Add(btnBackHome);
 
             _dgvServices = AppTheme.MakeDataGrid();
             _dgvServices.Dock = DockStyle.Fill;
@@ -413,12 +486,13 @@ namespace SERVIGO.Forms.Customer
         {
             try
             {
-                string keyword  = AppTheme.GetText(_txtSearch, "Search services…");
-                int?   catID    = _cboCat.SelectedValue is DBNull or null ? null
-                                  : (int?)Convert.ToInt32(_cboCat.SelectedValue);
-
-                var dt = ServiceDAL.SearchServices(keyword, catID);
+                string keyword = AppTheme.GetText(_txtSearch, "Search services…");
+                var dt = ServiceDAL.SearchServices(keyword, _currentCategoryID);
                 _dgvServices.DataSource = dt;
+
+                // Hide internal column not needed in UI
+                if (_dgvServices.Columns["ProviderID"] != null)
+                    _dgvServices.Columns["ProviderID"]!.Visible = false;
             }
             catch (Exception ex) { ShowError(ex.Message); }
         }
