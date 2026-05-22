@@ -1,44 +1,66 @@
 <div align="center">
 
-# SERVIGO  
-### Smart Service Booking & Management System
+<img width="120" src="https://cdn-icons-png.flaticon.com/512/942/942748.png"/>
 
-<img src="https://img.shields.io/badge/C%23-Windows%20Forms-blue?style=for-the-badge">
-<img src="https://img.shields.io/badge/SQL%20Server-Database-red?style=for-the-badge">
-<img src="https://img.shields.io/badge/.NET-Desktop%20Application-purple?style=for-the-badge">
+# SERVIGO
 
-<br>
+### Enterprise-Level Service Booking & Management Platform
 
-A modern desktop platform that connects customers with service providers through a secure appointment and booking management system.
+<p align="center">
+  <img src="https://img.shields.io/badge/C%23-Windows%20Forms-68217A?style=for-the-badge&logo=csharp&logoColor=white"/>
+  <img src="https://img.shields.io/badge/.NET-Framework-512BD4?style=for-the-badge&logo=dotnet&logoColor=white"/>
+  <img src="https://img.shields.io/badge/SQL%20Server-Database-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Architecture-3--Layer-blue?style=for-the-badge"/>
+</p>
+
+<p align="center">
+A modern desktop-based platform designed to streamline service booking, provider management, appointment scheduling, and customer interaction through a secure role-based architecture.
+</p>
 
 </div>
 
 ---
 
-# ✨ Features
+# 🚀 Overview
+
+SERVIGO is a professionally designed desktop application developed using **C# Windows Forms** and **SQL Server**.  
+The system enables customers to discover services, schedule appointments, interact with providers, and manage bookings efficiently while giving administrators full operational control.
+
+The project focuses on:
+- Secure authentication
+- Appointment automation
+- Service provider management
+- Scalable database architecture
+- Professional desktop UI/UX
+- Clean separation of concerns using 3-Layer Architecture
+
+---
+
+# ✨ Core Features
 
 <table>
 <tr>
 <td width="50%">
 
-## 👤 Customer Panel
-- Browse available services
-- Book appointments
-- Manage bookings
-- Submit ratings & reviews
-- Receive notifications
-- Feedback & reporting system
+## 👤 Customer Module
+- Service browsing system
+- Appointment booking
+- Booking history management
+- Ratings & reviews
+- Real-time notifications
+- Complaint & feedback system
 
 </td>
+
 <td width="50%">
 
-## 🛠️ Provider Panel
-- Manage services
-- Create availability slots
-- Accept/reject bookings
-- Mark appointments completed
-- Booking management dashboard
-- Notification system
+## 🛠 Provider Module
+- Service management
+- Time-slot scheduling
+- Incoming booking requests
+- Booking approval/rejection
+- Appointment completion workflow
+- Provider notification system
 
 </td>
 </tr>
@@ -46,116 +68,224 @@ A modern desktop platform that connects customers with service providers through
 
 ---
 
-# 🧠 Core Functionalities
+# 🛡 Admin Control Panel
 
 ```txt
-✔ Authentication & Role Management
-✔ Booking & Appointment System
-✔ Availability Slot Management
-✔ Real-Time Notification Flow
-✔ Ratings & Reviews
-✔ Feedback & Reports
-✔ Secure Session Management
-✔ Admin Control Panel
-✔ SQL Stored Procedures & Triggers
-✔ Three-Layer Architecture
+✔ User Management
+✔ Provider Verification
+✔ Booking Monitoring
+✔ Analytics Dashboard
+✔ Report Management
+✔ System Activity Tracking
+✔ Account Activation / Deactivation
 ```
 
 ---
 
-# 🏗️ System Architecture
+# 🧠 System Architecture
 
-```txt
-┌────────────────────┐
-│     UI Layer       │
-│ Windows Forms UI   │
-└─────────┬──────────┘
-          │
-┌─────────▼──────────┐
-│     DAL Layer      │
-│ Database Handling  │
-└─────────┬──────────┘
-          │
-┌─────────▼──────────┐
-│   Database Layer   │
-│ SQL Server System  │
-└────────────────────┘
+```text
+┌────────────────────────────┐
+│        UI LAYER            │
+│  Windows Forms Interface   │
+└─────────────┬──────────────┘
+              │
+┌─────────────▼──────────────┐
+│         DAL LAYER          │
+│ Database Access & Queries  │
+└─────────────┬──────────────┘
+              │
+┌─────────────▼──────────────┐
+│      DATABASE LAYER        │
+│ SQL Server + Procedures    │
+└────────────────────────────┘
 ```
 
 ---
 
-# ⚡ Technologies Used
+# ⚙ Technology Stack
 
 <div align="center">
 
 | Technology | Purpose |
 |---|---|
-| C# | Application Development |
-| Windows Forms | Desktop Interface |
-| SQL Server | Database |
-| ADO.NET | Database Connectivity |
-| BCrypt | Password Hashing |
-| Stored Procedures | Business Logic |
-| Triggers & Views | Database Automation |
+| **C#** | Application Logic |
+| **Windows Forms** | Desktop User Interface |
+| **SQL Server** | Relational Database |
+| **ADO.NET** | Database Connectivity |
+| **BCrypt** | Password Security |
+| **Stored Procedures** | Transaction Management |
+| **Triggers & Views** | Database Automation |
 
 </div>
 
 ---
 
-# 🔐 Security Features
-
-- BCrypt Password Hashing
-- SQL Injection Prevention
-- Session Management
-- Role-Based Authorization
-- Account Activation System
-- Parameterized Queries
-
----
-
-# 🗄️ Database Highlights
+# 🔐 Security Implementation
 
 ```txt
-• Fully Normalized Database (3NF)
-• Stored Procedures
-• SQL Triggers
-• Views & Functions
-• Audit Logging
-• Booking Status Management
+✔ BCrypt Password Hashing
+✔ SQL Injection Prevention
+✔ Parameterized Queries
+✔ Session-Based Authentication
+✔ Role-Based Access Control
+✔ Secure Account Management
 ```
 
 ---
 
-# 📊 Main Modules
+# 🗄 Database Design
 
-| Module | Description |
+The database is fully normalized in **Third Normal Form (3NF)** to ensure:
+- Reduced redundancy
+- Improved scalability
+- Better consistency
+- Efficient relational mapping
+
+### Main Tables
+
+```text
+Users
+Roles
+ServiceProviders
+Services
+TimeSlots
+Bookings
+Ratings
+Notifications
+FeedbackReports
+AuditLogs
+```
+
+---
+
+# 📊 Advanced Database Features
+
+| Feature | Description |
 |---|---|
-| Authentication | Login & Signup System |
-| Customer Dashboard | Booking & Service Management |
-| Provider Dashboard | Service & Slot Management |
-| Admin Panel | User & System Control |
-| Ratings System | 1–5 Star Review System |
-| Notifications | Real-Time Alerts |
-| Feedback System | Reports & Complaints |
+| Stored Procedures | Booking & status automation |
+| Triggers | Automatic audit logging |
+| Views | Reporting & analytics |
+| Functions | Dynamic calculations |
+| Transactions | Safe booking operations |
 
 ---
 
-# 🚀 Project Goals
+# 📦 Core Functional Modules
 
-- Simplify service booking
-- Improve provider-customer interaction
-- Demonstrate OOP concepts
-- Implement secure database architecture
-- Build a scalable desktop management system
+<table>
+<tr>
+<th>Module</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td>Authentication System</td>
+<td>Secure login/signup with role management</td>
+</tr>
+
+<tr>
+<td>Customer Dashboard</td>
+<td>Service discovery and appointment handling</td>
+</tr>
+
+<tr>
+<td>Provider Dashboard</td>
+<td>Service scheduling and booking workflow</td>
+</tr>
+
+<tr>
+<td>Admin Dashboard</td>
+<td>System-wide management and analytics</td>
+</tr>
+
+<tr>
+<td>Ratings & Reviews</td>
+<td>1–5 star feedback system</td>
+</tr>
+
+<tr>
+<td>Notification System</td>
+<td>Booking and status alerts</td>
+</tr>
+
+</table>
 
 ---
 
-# 👨‍💻 Developer
+# 🧩 OOP Concepts Applied
+
+```txt
+✔ Abstraction
+✔ Inheritance
+✔ Encapsulation
+✔ Polymorphism
+✔ Static Helper Classes
+```
+
+---
+
+# 📁 Project Structure
+
+```text
+SERVIGO/
+│
+├── Forms/
+├── DAL/
+├── Models/
+├── Database/
+├── Helpers/
+├── Assets/
+├── SQL Scripts/
+└── Program.cs
+```
+
+---
+
+# ⚡ Getting Started
+
+### Requirements
+- Visual Studio
+- SQL Server
+- .NET Framework
+- NuGet Packages
+
+### Setup
+
+```bash
+git clone https://github.com/your-username/SERVIGO.git
+```
+
+```bash
+Open Solution → Configure Database → Run Project
+```
+
+---
+
+# 📈 Future Enhancements
+
+- Online payment gateway
+- Mobile application support
+- Email & SMS notifications
+- AI-based provider recommendations
+- Real-time chat system
+
+---
 
 <div align="center">
 
+# 👨‍💻 Developer
+
 ## Qadees Asghar
+
+### Full Stack Desktop Application Developer
 
 </div>
 
+---
 
+<div align="center">
+
+### ⭐ If you like this project, consider giving it a star.
+
+</div>
