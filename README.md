@@ -278,7 +278,6 @@ Open Solution → Configure Database → Run Project
 
 ## Qadees Asghar
 
-### Full Stack Desktop Application Developer
 
 </div>
 
