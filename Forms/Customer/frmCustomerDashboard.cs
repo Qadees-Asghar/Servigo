@@ -17,6 +17,8 @@ namespace SERVIGO.Forms.Customer
         private Panel _pnlBrowse   = null!;
         private Panel _pnlBook     = null!;
         private Panel _pnlMyBks    = null!;
+        private Panel _pnlReviews  = null!;
+        private Panel _pnlFeedback = null!;
         private Panel _pnlNotifs   = null!;
 
         public frmCustomerDashboard()
@@ -103,6 +105,8 @@ namespace SERVIGO.Forms.Customer
                 ("🏠", "Home",             () => { ShowPanel(_pnlHome);   }),
                 ("🔍", "Browse Services",  () => { LoadBrowse();  ShowPanel(_pnlBrowse); }),
                 ("📋", "My Bookings",      () => { LoadMyBookings(); ShowPanel(_pnlMyBks); }),
+                ("⭐", "Reviews",          () => { LoadReviews(); ShowPanel(_pnlReviews); }),
+                ("📝", "Feedback",         () => { LoadMyFeedback(); ShowPanel(_pnlFeedback); }),
             };
 
             foreach (var (icon, label, click) in navItems)
@@ -219,13 +223,16 @@ namespace SERVIGO.Forms.Customer
 
         private void BuildAllPanels()
         {
-            _pnlHome   = BuildHomePanel();
-            _pnlBrowse = BuildBrowsePanel();
-            _pnlBook   = BuildBookPanel();
-            _pnlMyBks  = BuildMyBookingsPanel();
-            _pnlNotifs = BuildNotificationsPanel();
+            _pnlHome     = BuildHomePanel();
+            _pnlBrowse   = BuildBrowsePanel();
+            _pnlBook     = BuildBookPanel();
+            _pnlMyBks    = BuildMyBookingsPanel();
+            _pnlReviews  = BuildReviewsPanel();
+            _pnlFeedback = BuildFeedbackPanel();
+            _pnlNotifs   = BuildNotificationsPanel();
 
-            foreach (var p in new[] { _pnlHome, _pnlBrowse, _pnlBook, _pnlMyBks, _pnlNotifs })
+            foreach (var p in new[] { _pnlHome, _pnlBrowse, _pnlBook, _pnlMyBks,
+                                       _pnlReviews, _pnlFeedback, _pnlNotifs })
             {
                 p.Visible  = false;
                 p.Location = Point.Empty;
@@ -615,16 +622,21 @@ namespace SERVIGO.Forms.Customer
             var btnCancel = AppTheme.MakeDangerButton("Cancel Booking", 160, 38);
             btnCancel.Location = new Point(16, 9);
             btnCancel.Click   += BtnCancelBooking_Click;
-            pnlAction.Controls.Add(btnCancel);
+
+            var btnRate = AppTheme.MakeSuccessButton("⭐ Rate Provider", 160, 38);
+            btnRate.Location = new Point(190, 9);
+            btnRate.Click   += BtnRate_Click;
 
             var lblNote = new Label
             {
-                Text      = "  You can only cancel Pending bookings.",
+                Text      = "  Cancel: Pending only.  Rate: Completed only.",
                 Font      = AppTheme.FontSmall,
                 ForeColor = AppTheme.TextMuted,
                 AutoSize  = true,
-                Location  = new Point(186, 18)
+                Location  = new Point(364, 18)
             };
+            pnlAction.Controls.Add(btnCancel);
+            pnlAction.Controls.Add(btnRate);
             pnlAction.Controls.Add(lblNote);
 
             panel.Controls.Add(_dgvMyBks);
@@ -641,6 +653,14 @@ namespace SERVIGO.Forms.Customer
             {
                 var dt = BookingDAL.GetCustomerBookings(SessionManager.CurrentUser!.UserID);
                 _dgvMyBks.DataSource = dt;
+
+                // Hide internal columns from display
+                if (_dgvMyBks.Columns["ProviderID"] != null)
+                    _dgvMyBks.Columns["ProviderID"]!.Visible = false;
+                if (_dgvMyBks.Columns["HasRated"] != null)
+                    _dgvMyBks.Columns["HasRated"]!.Visible = false;
+                if (_dgvMyBks.Columns["StatusID"] != null)
+                    _dgvMyBks.Columns["StatusID"]!.Visible = false;
             }
             catch (Exception ex) { ShowError(ex.Message); }
         }
@@ -648,18 +668,292 @@ namespace SERVIGO.Forms.Customer
         private void BtnCancelBooking_Click(object? sender, EventArgs e)
         {
             if (_dgvMyBks.CurrentRow == null) return;
-            int    bkID    = Convert.ToInt32(_dgvMyBks.CurrentRow.Cells["BookingID"].Value);
-            int    statusID = Convert.ToInt32(_dgvMyBks.CurrentRow.Cells["StatusID"].Value);
+            int bkID     = Convert.ToInt32(_dgvMyBks.CurrentRow.Cells["BookingID"].Value);
+            int statusID = Convert.ToInt32(_dgvMyBks.CurrentRow.Cells["StatusID"].Value);
 
-            if (statusID != 1) // Not Pending
+            if (statusID != 1)
             { ShowInfo("Only Pending bookings can be cancelled."); return; }
 
             if (MessageBox.Show($"Cancel Booking #{bkID}?", "Confirm",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                BookingDAL.UpdateStatus(bkID, 4, SessionManager.CurrentUser!.UserID); // 4 = Cancelled
+                BookingDAL.UpdateStatus(bkID, 4, SessionManager.CurrentUser!.UserID);
                 LoadMyBookings();
             }
+        }
+
+        private void BtnRate_Click(object? sender, EventArgs e)
+        {
+            if (_dgvMyBks.CurrentRow == null) return;
+
+            int    bkID       = Convert.ToInt32(_dgvMyBks.CurrentRow.Cells["BookingID"].Value);
+            int    statusID   = Convert.ToInt32(_dgvMyBks.CurrentRow.Cells["StatusID"].Value);
+            int    providerID = Convert.ToInt32(_dgvMyBks.CurrentRow.Cells["ProviderID"].Value);
+            int    hasRated   = Convert.ToInt32(_dgvMyBks.CurrentRow.Cells["HasRated"].Value);
+            string provider   = _dgvMyBks.CurrentRow.Cells["ProviderName"].Value?.ToString() ?? "Provider";
+
+            if (statusID != 3)  // 3 = Completed
+            { ShowInfo("You can only rate Completed bookings."); return; }
+
+            if (hasRated == 1)
+            { ShowInfo("You have already rated this booking."); return; }
+
+            using var dlg = new frmRating(provider);
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+                try
+                {
+                    RatingDAL.SubmitRating(bkID, providerID,
+                        SessionManager.CurrentUser!.UserID,
+                        dlg.SelectedStars, dlg.RatingComment);
+                    LoadMyBookings();
+                    ShowInfo($"Thank you! You rated {provider}  {new string('★', dlg.SelectedStars)}");
+                }
+                catch (Exception ex) { ShowError($"Could not submit rating:\n{ex.Message}"); }
+            }
+        }
+
+        // ──────────────────────────────────────────────────────────────────────
+        //  REVIEWS PANEL
+        // ──────────────────────────────────────────────────────────────────────
+
+        private DataGridView _dgvUnreviewed = null!;
+        private DataGridView _dgvReviewed   = null!;
+
+        private Panel BuildReviewsPanel()
+        {
+            var panel  = new Panel { BackColor = AppTheme.Background };
+            var header = MakePanelHeader("Reviews", "Rate completed bookings and manage your reviews.");
+
+            var content = new Panel
+            {
+                Dock       = DockStyle.Fill,
+                AutoScroll = true,
+                BackColor  = Color.Transparent,
+                Padding    = new Padding(24, 16, 24, 16)
+            };
+
+            var flow = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.TopDown,
+                AutoSize      = true,
+                WrapContents  = false,
+                Dock          = DockStyle.Top,
+                BackColor     = Color.Transparent
+            };
+
+            // Unreviewed section
+            var lblPending = AppTheme.MakeLabel("Pending Reviews", AppTheme.FontSubtitle, AppTheme.Gold);
+            lblPending.Margin = new Padding(0, 0, 0, 8);
+            flow.Controls.Add(lblPending);
+
+            _dgvUnreviewed = AppTheme.MakeDataGrid();
+            _dgvUnreviewed.Size = new Size(900, 200);
+            _dgvUnreviewed.Margin = new Padding(0, 0, 0, 8);
+            flow.Controls.Add(_dgvUnreviewed);
+
+            var btnRate = AppTheme.MakePrimaryButton("⭐ Write Review", 180, 40);
+            btnRate.Margin = new Padding(0, 0, 0, 24);
+            btnRate.Click += BtnReviewRate_Click;
+            flow.Controls.Add(btnRate);
+
+            // Reviewed section
+            var lblDone = AppTheme.MakeLabel("Your Reviews", AppTheme.FontSubtitle, AppTheme.Success);
+            lblDone.Margin = new Padding(0, 0, 0, 8);
+            flow.Controls.Add(lblDone);
+
+            _dgvReviewed = AppTheme.MakeDataGrid();
+            _dgvReviewed.Size = new Size(900, 200);
+            _dgvReviewed.Margin = new Padding(0, 0, 0, 8);
+            flow.Controls.Add(_dgvReviewed);
+
+            var btnEdit = AppTheme.MakeOutlineButton("✏ Edit Review", 160, 40);
+            btnEdit.Margin = new Padding(0, 0, 0, 16);
+            btnEdit.Click += BtnReviewEdit_Click;
+            flow.Controls.Add(btnEdit);
+
+            content.Controls.Add(flow);
+            panel.Controls.Add(content);
+            panel.Controls.Add(header);
+
+            return panel;
+        }
+
+        private void LoadReviews()
+        {
+            try
+            {
+                string uid = SessionManager.CurrentUser!.UserID;
+                _dgvUnreviewed.DataSource = RatingDAL.GetUnreviewedBookings(uid);
+                _dgvReviewed.DataSource   = RatingDAL.GetReviewedBookings(uid);
+
+                if (_dgvUnreviewed.Columns["ProviderID"] != null)
+                    _dgvUnreviewed.Columns["ProviderID"]!.Visible = false;
+                if (_dgvReviewed.Columns["ProviderID"] != null)
+                    _dgvReviewed.Columns["ProviderID"]!.Visible = false;
+                if (_dgvReviewed.Columns["BookingID"] != null)
+                    _dgvReviewed.Columns["BookingID"]!.Visible = false;
+            }
+            catch (Exception ex) { ShowError(ex.Message); }
+        }
+
+        private void BtnReviewRate_Click(object? sender, EventArgs e)
+        {
+            if (_dgvUnreviewed.CurrentRow == null)
+            { ShowInfo("Select a booking to review."); return; }
+
+            int    bkID     = Convert.ToInt32(_dgvUnreviewed.CurrentRow.Cells["BookingID"].Value);
+            int    provID   = Convert.ToInt32(_dgvUnreviewed.CurrentRow.Cells["ProviderID"].Value);
+            string provider = _dgvUnreviewed.CurrentRow.Cells["ProviderName"].Value?.ToString() ?? "Provider";
+
+            using var dlg = new frmRating(provider);
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+                try
+                {
+                    RatingDAL.SubmitRating(bkID, provID,
+                        SessionManager.CurrentUser!.UserID,
+                        dlg.SelectedStars, dlg.RatingComment);
+                    LoadReviews();
+                    ShowInfo($"Thank you! You rated {provider}  {new string('★', dlg.SelectedStars)}");
+                }
+                catch (Exception ex) { ShowError(ex.Message); }
+            }
+        }
+
+        private void BtnReviewEdit_Click(object? sender, EventArgs e)
+        {
+            if (_dgvReviewed.CurrentRow == null)
+            { ShowInfo("Select a review to edit."); return; }
+
+            int    bkID     = Convert.ToInt32(_dgvReviewed.CurrentRow.Cells["BookingID"].Value);
+            int    oldStars = Convert.ToInt32(_dgvReviewed.CurrentRow.Cells["Stars"].Value);
+            string oldComm  = _dgvReviewed.CurrentRow.Cells["Comment"].Value?.ToString() ?? "";
+            string provider = _dgvReviewed.CurrentRow.Cells["ProviderName"].Value?.ToString() ?? "Provider";
+
+            using var dlg = new frmRating(provider, oldStars, oldComm);
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+                try
+                {
+                    RatingDAL.UpdateRating(bkID, dlg.SelectedStars, dlg.RatingComment);
+                    LoadReviews();
+                    ShowInfo($"Review updated!  {new string('★', dlg.SelectedStars)}");
+                }
+                catch (Exception ex) { ShowError(ex.Message); }
+            }
+        }
+
+        // ──────────────────────────────────────────────────────────────────────
+        //  FEEDBACK & REPORTS PANEL
+        // ──────────────────────────────────────────────────────────────────────
+
+        private DataGridView _dgvFeedback = null!;
+
+        private Panel BuildFeedbackPanel()
+        {
+            var panel  = new Panel { BackColor = AppTheme.Background };
+            var header = MakePanelHeader("Feedback & Reports",
+                "Share feedback, report system issues, or report a provider.");
+
+            var content = new Panel
+            {
+                Dock       = DockStyle.Fill,
+                AutoScroll = true,
+                BackColor  = Color.Transparent,
+                Padding    = new Padding(24, 16, 24, 16)
+            };
+
+            var flow = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.TopDown,
+                AutoSize      = true,
+                WrapContents  = false,
+                Dock          = DockStyle.Top,
+                BackColor     = Color.Transparent
+            };
+
+            // Type selector
+            var lblType = AppTheme.MakeLabel("Report Type", AppTheme.FontBodyBold);
+            lblType.Margin = new Padding(0, 0, 0, 4);
+            flow.Controls.Add(lblType);
+
+            var cboType = AppTheme.MakeComboBox(300, 36);
+            cboType.Items.AddRange(new[] { "Feedback", "Report System Issue", "Report a Provider" });
+            cboType.SelectedIndex = 0;
+            cboType.Margin = new Padding(0, 0, 0, 12);
+            flow.Controls.Add(cboType);
+
+            // Subject
+            var lblSubj = AppTheme.MakeLabel("Subject", AppTheme.FontBodyBold);
+            lblSubj.Margin = new Padding(0, 0, 0, 4);
+            flow.Controls.Add(lblSubj);
+
+            var txtSubj = AppTheme.MakeTextBox(500, 36);
+            AppTheme.AddPlaceholder(txtSubj, "Brief subject line…");
+            txtSubj.Margin = new Padding(0, 0, 0, 12);
+            flow.Controls.Add(txtSubj);
+
+            // Description
+            var lblDesc = AppTheme.MakeLabel("Description", AppTheme.FontBodyBold);
+            lblDesc.Margin = new Padding(0, 0, 0, 4);
+            flow.Controls.Add(lblDesc);
+
+            var txtDesc = AppTheme.MakeTextBox(500, 80);
+            txtDesc.Multiline  = true;
+            txtDesc.ScrollBars = ScrollBars.Vertical;
+            AppTheme.AddPlaceholder(txtDesc, "Describe in detail…");
+            txtDesc.Margin = new Padding(0, 0, 0, 12);
+            flow.Controls.Add(txtDesc);
+
+            // Submit button
+            var btnSubmit = AppTheme.MakePrimaryButton("Submit Report", 180, 40);
+            btnSubmit.Margin = new Padding(0, 0, 0, 24);
+            btnSubmit.Click += (s, e) =>
+            {
+                string type = cboType.SelectedItem?.ToString() ?? "Feedback";
+                string subj = AppTheme.GetText(txtSubj, "Brief subject line…");
+                string desc = AppTheme.GetText(txtDesc, "Describe in detail…");
+
+                if (string.IsNullOrWhiteSpace(subj) || string.IsNullOrWhiteSpace(desc))
+                { ShowInfo("Please fill in both subject and description."); return; }
+
+                try
+                {
+                    FeedbackDAL.Submit(SessionManager.CurrentUser!.UserID, type, null, subj, desc);
+                    ShowInfo("Your report has been submitted. Admin will review it.");
+                    AppTheme.AddPlaceholder(txtSubj, "Brief subject line…");
+                    AppTheme.AddPlaceholder(txtDesc, "Describe in detail…");
+                    LoadMyFeedback();
+                }
+                catch (Exception ex) { ShowError(ex.Message); }
+            };
+            flow.Controls.Add(btnSubmit);
+
+            // History
+            var lblHistory = AppTheme.MakeLabel("Your Submissions", AppTheme.FontSubtitle, AppTheme.Info);
+            lblHistory.Margin = new Padding(0, 0, 0, 8);
+            flow.Controls.Add(lblHistory);
+
+            _dgvFeedback = AppTheme.MakeDataGrid();
+            _dgvFeedback.Size   = new Size(900, 200);
+            _dgvFeedback.Margin = new Padding(0, 0, 0, 16);
+            flow.Controls.Add(_dgvFeedback);
+
+            content.Controls.Add(flow);
+            panel.Controls.Add(content);
+            panel.Controls.Add(header);
+
+            return panel;
+        }
+
+        private void LoadMyFeedback()
+        {
+            try
+            {
+                _dgvFeedback.DataSource = FeedbackDAL.GetByUser(SessionManager.CurrentUser!.UserID);
+            }
+            catch (Exception ex) { ShowError(ex.Message); }
         }
 
         // ──────────────────────────────────────────────────────────────────────

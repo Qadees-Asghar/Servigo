@@ -51,7 +51,13 @@ namespace SERVIGO.DAL
                     cmd.ExecuteNonQuery();
                 }
 
-                // 1. Bookings on this provider's time slots
+                // 1. Ratings on this provider's bookings
+                Exec(@"DELETE rt FROM Ratings rt
+                       JOIN Bookings b  ON rt.BookingID = b.BookingID
+                       JOIN TimeSlots ts ON b.SlotID    = ts.SlotID
+                       WHERE ts.ProviderID = @PID");
+
+                // 2. Bookings on this provider's time slots
                 Exec(@"DELETE b FROM Bookings b
                        JOIN TimeSlots ts ON b.SlotID = ts.SlotID
                        WHERE ts.ProviderID = @PID");

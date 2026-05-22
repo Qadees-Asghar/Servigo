@@ -134,10 +134,23 @@ namespace SERVIGO.DAL
                     cmd.ExecuteNonQuery();
                 }
 
-                // 1. Notifications belong to this user
+                // 1. Feedback & Reports submitted by this user
+                Exec("DELETE FROM FeedbackReports WHERE SubmittedBy = @UID");
+
+                // 2. Notifications belong to this user
                 Exec("DELETE FROM Notifications WHERE UserID = @UID");
 
-                // 2. Bookings where this user is the customer
+                // 2. Anonymize ratings this customer gave — keeps provider averages intact
+                Exec("UPDATE Ratings SET CustomerID = NULL WHERE CustomerID = @UID");
+
+                // 3. Ratings on this provider's bookings (provider is being deleted — remove these)
+                Exec(@"DELETE rt FROM Ratings rt
+                       JOIN Bookings b ON rt.BookingID = b.BookingID
+                       JOIN TimeSlots ts ON b.SlotID = ts.SlotID
+                       JOIN ServiceProviders sp ON ts.ProviderID = sp.ProviderID
+                       WHERE sp.UserID = @UID");
+
+                // 4. Bookings where this user is the customer
                 Exec("DELETE FROM Bookings WHERE CustomerID = @UID");
 
                 // 3. Bookings linked to this provider's time slots

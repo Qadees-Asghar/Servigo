@@ -77,7 +77,11 @@ namespace SERVIGO.DAL
                 @"SELECT b.BookingID, b.StatusID, bs.StatusName, b.BookedAt,
                          b.Notes, s.ServiceName, s.Price,
                          u.FullName AS ProviderName,
-                         ts.SlotDate, ts.StartTime, ts.EndTime
+                         ts.SlotDate, ts.StartTime, ts.EndTime,
+                         sp.ProviderID,
+                         CASE WHEN EXISTS (
+                             SELECT 1 FROM Ratings r WHERE r.BookingID = b.BookingID
+                         ) THEN 1 ELSE 0 END AS HasRated
                   FROM   Bookings b
                   JOIN   BookingStatuses bs ON b.StatusID  = bs.StatusID
                   JOIN   Services        s  ON b.ServiceID = s.ServiceID

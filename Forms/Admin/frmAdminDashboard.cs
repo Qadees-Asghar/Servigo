@@ -21,6 +21,7 @@ namespace SERVIGO.Forms.Admin
         private Panel _pnlBookings    = null!;
         private Panel _pnlLogs        = null!;
         private Panel _pnlAnalytics   = null!;
+        private Panel _pnlReports     = null!;
 
         // Active sidebar button tracking
         private Button? _activeNav;
@@ -123,6 +124,7 @@ namespace SERVIGO.Forms.Admin
                 ("🔧", "Manage Providers",  () => { LoadProviders();      ShowPanel(_pnlProviders); }),
                 ("📋", "All Bookings",      () => { LoadBookings();       ShowPanel(_pnlBookings); }),
                 ("📊", "Analytics",         () => { LoadAnalytics();      ShowPanel(_pnlAnalytics); }),
+                ("📝", "Reports",           () => { LoadReports();        ShowPanel(_pnlReports); }),
                 ("📜", "Audit Logs",        () => { LoadLogs();           ShowPanel(_pnlLogs); }),
             };
 
@@ -235,10 +237,11 @@ namespace SERVIGO.Forms.Admin
             _pnlProviders = BuildProvidersPanel();
             _pnlBookings  = BuildBookingsPanel();
             _pnlAnalytics = BuildAnalyticsPanel();
+            _pnlReports   = BuildReportsPanel();
             _pnlLogs      = BuildLogsPanel();
 
             foreach (var p in new[] { _pnlDashboard, _pnlUsers, _pnlProviders,
-                                       _pnlBookings,  _pnlAnalytics, _pnlLogs })
+                                       _pnlBookings,  _pnlAnalytics, _pnlReports, _pnlLogs })
             {
                 p.Visible  = false;
                 p.Location = Point.Empty;
@@ -699,6 +702,79 @@ namespace SERVIGO.Forms.Admin
         // ──────────────────────────────────────────────────────────────────────
 
         private DataGridView _dgvLogs = null!;
+
+        // ──────────────────────────────────────────────────────────────────────
+        //  REPORTS PANEL
+        // ──────────────────────────────────────────────────────────────────────
+
+        private DataGridView _dgvReports = null!;
+
+        private Panel BuildReportsPanel()
+        {
+            var panel = new Panel { BackColor = AppTheme.Background };
+            var head  = MakePanelHeader("Feedback & Reports",
+                "Review user feedback, system issues, and provider/customer reports.");
+            head.Dock = DockStyle.Top;
+
+            var toolbar = new Panel
+            {
+                Height = 60, Dock = DockStyle.Top,
+                BackColor = AppTheme.CardBg, Padding = new Padding(16, 10, 16, 10)
+            };
+
+            var btnRefresh = AppTheme.MakePrimaryButton("Refresh", 110, 38);
+            btnRefresh.Location = new Point(16, 11);
+            btnRefresh.Click   += (s, e) => LoadReports();
+
+            var btnResolve = AppTheme.MakeSuccessButton("✔ Mark Resolved", 180, 38);
+            btnResolve.Location = new Point(140, 11);
+            btnResolve.Click   += (s, e) =>
+            {
+                if (_dgvReports.CurrentRow == null) return;
+                int id = Convert.ToInt32(_dgvReports.CurrentRow.Cells["ReportID"].Value);
+                try { FeedbackDAL.MarkResolved(id); LoadReports(); }
+                catch (Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            };
+
+            var btnUnresolve = AppTheme.MakeOutlineButton("✖ Reopen", 110, 38);
+            btnUnresolve.Location = new Point(334, 11);
+            btnUnresolve.Click   += (s, e) =>
+            {
+                if (_dgvReports.CurrentRow == null) return;
+                int id = Convert.ToInt32(_dgvReports.CurrentRow.Cells["ReportID"].Value);
+                try { FeedbackDAL.MarkUnresolved(id); LoadReports(); }
+                catch (Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            };
+
+            toolbar.Controls.Add(btnRefresh);
+            toolbar.Controls.Add(btnResolve);
+            toolbar.Controls.Add(btnUnresolve);
+
+            _dgvReports = AppTheme.MakeDataGrid();
+            _dgvReports.Dock = DockStyle.Fill;
+
+            panel.Controls.Add(_dgvReports);
+            panel.Controls.Add(toolbar);
+            panel.Controls.Add(head);
+
+            return panel;
+        }
+
+        private void LoadReports()
+        {
+            try
+            {
+                _dgvReports.DataSource = FeedbackDAL.GetAll();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // ──────────────────────────────────────────────────────────────────────
+        //  LOGS PANEL
+        // ──────────────────────────────────────────────────────────────────────
 
         private Panel BuildLogsPanel()
         {

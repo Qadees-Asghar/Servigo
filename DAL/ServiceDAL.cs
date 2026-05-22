@@ -72,7 +72,7 @@ namespace SERVIGO.DAL
                   AND  (@Keyword = '' OR s.ServiceName LIKE '%' + @Keyword + '%'
                                      OR u.FullName    LIKE '%' + @Keyword + '%')
                   AND  (@CatID IS NULL OR sp.CategoryID = @CatID)
-                ORDER  BY u.FullName, s.ServiceName";
+                ORDER  BY sp.AverageRating DESC, u.FullName";
 
             return DatabaseHelper.ExecuteQuery(sql,
                 DatabaseHelper.Param("@Keyword", keyword ?? string.Empty),

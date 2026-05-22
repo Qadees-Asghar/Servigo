@@ -18,6 +18,7 @@ namespace SERVIGO.Forms.Provider
         private Panel _pnlServices = null!;
         private Panel _pnlSchedule = null!;
         private Panel _pnlBookings = null!;
+        private Panel _pnlFeedback = null!;
         private Panel _pnlNotifs   = null!;
 
         private int ProviderID => SessionManager.CurrentProviderID ?? 0;
@@ -116,6 +117,7 @@ namespace SERVIGO.Forms.Provider
                 ("🔧", "My Services",       () => { LoadServices();  ShowPanel(_pnlServices); }),
                 ("📅", "My Schedule",       () => { LoadSchedule();  ShowPanel(_pnlSchedule); }),
                 ("📋", "Incoming Bookings", () => { LoadBookings();  ShowPanel(_pnlBookings); }),
+                ("📝", "Feedback",          () => { LoadProviderFeedback(); ShowPanel(_pnlFeedback); }),
             };
 
             foreach (var (icon, label, click) in navItems)
@@ -235,9 +237,11 @@ namespace SERVIGO.Forms.Provider
             _pnlServices = BuildServicesPanel();
             _pnlSchedule = BuildSchedulePanel();
             _pnlBookings = BuildBookingsPanel();
+            _pnlFeedback = BuildProviderFeedbackPanel();
             _pnlNotifs   = BuildNotificationsPanel();
 
-            foreach (var p in new[] { _pnlHome, _pnlServices, _pnlSchedule, _pnlBookings, _pnlNotifs })
+            foreach (var p in new[] { _pnlHome, _pnlServices, _pnlSchedule,
+                                       _pnlBookings, _pnlFeedback, _pnlNotifs })
             {
                 p.Visible  = false;
                 p.Location = Point.Empty;
@@ -852,6 +856,115 @@ namespace SERVIGO.Forms.Provider
         private static Label FieldLabel(string text, Point loc)
             => new() { Text = text, Font = AppTheme.FontBodyBold, ForeColor = AppTheme.TextDark,
                         AutoSize = true, Location = loc };
+
+        // ──────────────────────────────────────────────────────────────────────
+        //  FEEDBACK & REPORTS PANEL
+        // ──────────────────────────────────────────────────────────────────────
+
+        private DataGridView _dgvProvFeedback = null!;
+
+        private Panel BuildProviderFeedbackPanel()
+        {
+            var panel  = new Panel { BackColor = AppTheme.Background };
+            var header = MakePanelHeader("Feedback & Reports",
+                "Share feedback, report system issues, or report a customer.");
+
+            var content = new Panel
+            {
+                Dock       = DockStyle.Fill,
+                AutoScroll = true,
+                BackColor  = Color.Transparent,
+                Padding    = new Padding(24, 16, 24, 16)
+            };
+
+            var flow = new FlowLayoutPanel
+            {
+                FlowDirection = FlowDirection.TopDown,
+                AutoSize      = true,
+                WrapContents  = false,
+                Dock          = DockStyle.Top,
+                BackColor     = Color.Transparent
+            };
+
+            var lblType = AppTheme.MakeLabel("Report Type", AppTheme.FontBodyBold);
+            lblType.Margin = new Padding(0, 0, 0, 4);
+            flow.Controls.Add(lblType);
+
+            var cboType = AppTheme.MakeComboBox(300, 36);
+            cboType.Items.AddRange(new[] { "Feedback", "Report System Issue", "Report a Customer" });
+            cboType.SelectedIndex = 0;
+            cboType.Margin = new Padding(0, 0, 0, 12);
+            flow.Controls.Add(cboType);
+
+            var lblSubj = AppTheme.MakeLabel("Subject", AppTheme.FontBodyBold);
+            lblSubj.Margin = new Padding(0, 0, 0, 4);
+            flow.Controls.Add(lblSubj);
+
+            var txtSubj = AppTheme.MakeTextBox(500, 36);
+            AppTheme.AddPlaceholder(txtSubj, "Brief subject line…");
+            txtSubj.Margin = new Padding(0, 0, 0, 12);
+            flow.Controls.Add(txtSubj);
+
+            var lblDesc = AppTheme.MakeLabel("Description", AppTheme.FontBodyBold);
+            lblDesc.Margin = new Padding(0, 0, 0, 4);
+            flow.Controls.Add(lblDesc);
+
+            var txtDesc = AppTheme.MakeTextBox(500, 80);
+            txtDesc.Multiline  = true;
+            txtDesc.ScrollBars = ScrollBars.Vertical;
+            AppTheme.AddPlaceholder(txtDesc, "Describe in detail…");
+            txtDesc.Margin = new Padding(0, 0, 0, 12);
+            flow.Controls.Add(txtDesc);
+
+            var btnSubmit = AppTheme.MakePrimaryButton("Submit Report", 180, 40);
+            btnSubmit.Margin = new Padding(0, 0, 0, 24);
+            btnSubmit.Click += (s, e) =>
+            {
+                string type = cboType.SelectedItem?.ToString() ?? "Feedback";
+                string subj = AppTheme.GetText(txtSubj, "Brief subject line…");
+                string desc = AppTheme.GetText(txtDesc, "Describe in detail…");
+
+                if (string.IsNullOrWhiteSpace(subj) || string.IsNullOrWhiteSpace(desc))
+                { ShowInfo("Please fill in both subject and description."); return; }
+
+                try
+                {
+                    FeedbackDAL.Submit(SessionManager.CurrentUser!.UserID, type, null, subj, desc);
+                    ShowInfo("Your report has been submitted. Admin will review it.");
+                    AppTheme.AddPlaceholder(txtSubj, "Brief subject line…");
+                    AppTheme.AddPlaceholder(txtDesc, "Describe in detail…");
+                    LoadProviderFeedback();
+                }
+                catch (Exception ex) { ShowError(ex.Message); }
+            };
+            flow.Controls.Add(btnSubmit);
+
+            var lblHistory = AppTheme.MakeLabel("Your Submissions", AppTheme.FontSubtitle, AppTheme.Info);
+            lblHistory.Margin = new Padding(0, 0, 0, 8);
+            flow.Controls.Add(lblHistory);
+
+            _dgvProvFeedback = AppTheme.MakeDataGrid();
+            _dgvProvFeedback.Size   = new Size(900, 200);
+            _dgvProvFeedback.Margin = new Padding(0, 0, 0, 16);
+            flow.Controls.Add(_dgvProvFeedback);
+
+            content.Controls.Add(flow);
+            panel.Controls.Add(content);
+            panel.Controls.Add(header);
+
+            return panel;
+        }
+
+        private void LoadProviderFeedback()
+        {
+            try
+            {
+                _dgvProvFeedback.DataSource = FeedbackDAL.GetByUser(SessionManager.CurrentUser!.UserID);
+            }
+            catch (Exception ex) { ShowError(ex.Message); }
+        }
+
+        // ──────────────────────────────────────────────────────────────────────
 
         private void DeleteMyAccount()
         {
