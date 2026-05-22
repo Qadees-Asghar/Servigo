@@ -158,10 +158,4 @@ A modern desktop platform that connects customers with service providers through
 
 </div>
 
----
 
-# ⭐ Project Status
-
-```txt
-Semester Project Completed Successfully
-```
