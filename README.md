@@ -1,101 +1,167 @@
 <div align="center">
 
-<h1>SERVIGO</h1>
+# SERVIGO  
+### Smart Service Booking & Management System
 
-<p>
-A modern Home Services Booking Platform built using 
-<b>C# WinForms</b> and <b>Microsoft SQL Server</b>.
-</p>
-
-<p>
-SERVIGO connects customers with trusted service providers for
-home services including plumbing, electrical work, cleaning,
-mechanical repairs and more.
-</p>
+<img src="https://img.shields.io/badge/C%23-Windows%20Forms-blue?style=for-the-badge">
+<img src="https://img.shields.io/badge/SQL%20Server-Database-red?style=for-the-badge">
+<img src="https://img.shields.io/badge/.NET-Desktop%20Application-purple?style=for-the-badge">
 
 <br>
 
-<img src="https://img.shields.io/badge/C%23-WinForms-orange?style=for-the-badge">
-<img src="https://img.shields.io/badge/SQL%20Server-Database-black?style=for-the-badge">
-<img src="https://img.shields.io/badge/Desktop-Application-orange?style=for-the-badge">
+A modern desktop platform that connects customers with service providers through a secure appointment and booking management system.
 
 </div>
 
 ---
 
-<h2>About The Project</h2>
+# ✨ Features
 
-<p>
-SERVIGO was developed to simplify the process of finding and booking
-home service providers through a clean and user-friendly desktop platform.
-The system allows customers to explore services, make bookings and track
-their requests while providers can manage services, schedules and bookings
-from their own dashboard.
-</p>
+<table>
+<tr>
+<td width="50%">
 
-<p>
-The platform also includes an admin panel for monitoring users,
-providers, bookings and overall system activity.
-</p>
+## 👤 Customer Panel
+- Browse available services
+- Book appointments
+- Manage bookings
+- Submit ratings & reviews
+- Receive notifications
+- Feedback & reporting system
 
----
+</td>
+<td width="50%">
 
-<h2>Main Features</h2>
+## 🛠️ Provider Panel
+- Manage services
+- Create availability slots
+- Accept/reject bookings
+- Mark appointments completed
+- Booking management dashboard
+- Notification system
 
-<ul>
-<li>Multi-role system (Customer, Provider, Admin)</li>
-<li>Modern dark themed interface</li>
-<li>Service search and category filtering</li>
-<li>Booking management system</li>
-<li>Provider scheduling and slot management</li>
-<li>Notifications system</li>
-<li>Verified provider badge system</li>
-<li>Dashboard statistics and monitoring</li>
-<li>SQL trigger based automation</li>
-<li>Responsive WinForms layout structure</li>
-</ul>
+</td>
+</tr>
+</table>
 
 ---
 
-<h2>Project Goals</h2>
+# 🧠 Core Functionalities
 
-<ul>
-<li>Improve accessibility of home services</li>
-<li>Reduce manual booking processes</li>
-<li>Create a centralized service management platform</li>
-<li>Provide a smooth desktop user experience</li>
-<li>Ensure organized scheduling and booking flow</li>
-</ul>
-
----
-
-<h2>Future Improvements</h2>
-
-<ul>
-<li>Online payment integration</li>
-<li>Live chat system</li>
-<li>Ratings and reviews</li>
-<li>Email notifications</li>
-<li>Mobile application version</li>
-<li>Advanced analytics dashboard</li>
-</ul>
+```txt
+✔ Authentication & Role Management
+✔ Booking & Appointment System
+✔ Availability Slot Management
+✔ Real-Time Notification Flow
+✔ Ratings & Reviews
+✔ Feedback & Reports
+✔ Secure Session Management
+✔ Admin Control Panel
+✔ SQL Stored Procedures & Triggers
+✔ Three-Layer Architecture
+```
 
 ---
 
-<h2>Developer</h2>
+# 🏗️ System Architecture
 
-<p>
-<b>Qadees Asghar</b><br>
-UET Lahore Main Campus<br>
-2026
-</p>
+```txt
+┌────────────────────┐
+│     UI Layer       │
+│ Windows Forms UI   │
+└─────────┬──────────┘
+          │
+┌─────────▼──────────┐
+│     DAL Layer      │
+│ Database Handling  │
+└─────────┬──────────┘
+          │
+┌─────────▼──────────┐
+│   Database Layer   │
+│ SQL Server System  │
+└────────────────────┘
+```
 
-<p>
-<a href="https://github.com/Qadees-Asghar">GitHub Profile</a>
-</p>
+---
+
+# ⚡ Technologies Used
 
 <div align="center">
 
-<h3>⭐ SERVIGO — Making Home Services Simple</h3>
+| Technology | Purpose |
+|---|---|
+| C# | Application Development |
+| Windows Forms | Desktop Interface |
+| SQL Server | Database |
+| ADO.NET | Database Connectivity |
+| BCrypt | Password Hashing |
+| Stored Procedures | Business Logic |
+| Triggers & Views | Database Automation |
 
 </div>
+
+---
+
+# 🔐 Security Features
+
+- BCrypt Password Hashing
+- SQL Injection Prevention
+- Session Management
+- Role-Based Authorization
+- Account Activation System
+- Parameterized Queries
+
+---
+
+# 🗄️ Database Highlights
+
+```txt
+• Fully Normalized Database (3NF)
+• Stored Procedures
+• SQL Triggers
+• Views & Functions
+• Audit Logging
+• Booking Status Management
+```
+
+---
+
+# 📊 Main Modules
+
+| Module | Description |
+|---|---|
+| Authentication | Login & Signup System |
+| Customer Dashboard | Booking & Service Management |
+| Provider Dashboard | Service & Slot Management |
+| Admin Panel | User & System Control |
+| Ratings System | 1–5 Star Review System |
+| Notifications | Real-Time Alerts |
+| Feedback System | Reports & Complaints |
+
+---
+
+# 🚀 Project Goals
+
+- Simplify service booking
+- Improve provider-customer interaction
+- Demonstrate OOP concepts
+- Implement secure database architecture
+- Build a scalable desktop management system
+
+---
+
+# 👨‍💻 Developer
+
+<div align="center">
+
+## Qadees Asghar
+
+</div>
+
+---
+
+# ⭐ Project Status
+
+```txt
+Semester Project Completed Successfully
+```
