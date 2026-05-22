@@ -102,6 +102,30 @@ CREATE TABLE Notifications (
     CreatedAt      DATETIME      NOT NULL DEFAULT GETDATE()
 );
 
+CREATE TABLE Ratings (
+    RatingID   INT IDENTITY(1,1) PRIMARY KEY,
+    BookingID  INT          NOT NULL UNIQUE,
+    ProviderID INT          NOT NULL,
+    CustomerID NVARCHAR(10) NULL,
+    Stars      TINYINT      NOT NULL CHECK (Stars BETWEEN 1 AND 5),
+    Comment    NVARCHAR(500) NULL,
+    CreatedAt  DATETIME     NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (BookingID)  REFERENCES Bookings(BookingID),
+    FOREIGN KEY (ProviderID) REFERENCES ServiceProviders(ProviderID)
+);
+
+CREATE TABLE FeedbackReports (
+    ReportID     INT IDENTITY(1,1) PRIMARY KEY,
+    SubmittedBy  NVARCHAR(20)  NOT NULL,
+    ReportType   NVARCHAR(30)  NOT NULL,
+    TargetUserID NVARCHAR(20)  NULL,
+    Subject      NVARCHAR(200) NOT NULL,
+    Description  NVARCHAR(1000) NOT NULL,
+    IsResolved   BIT           NOT NULL DEFAULT 0,
+    ResolvedAt   DATETIME      NULL,
+    CreatedAt    DATETIME      NOT NULL DEFAULT GETDATE()
+);
+
 CREATE TABLE AuditLogs (
     LogID       INT            PRIMARY KEY IDENTITY(1,1),
     TableName   NVARCHAR(100)  NOT NULL,
@@ -127,6 +151,9 @@ CREATE INDEX IX_TimeSlots_Provider   ON TimeSlots(ProviderID, SlotDate);
 CREATE INDEX IX_Notifications_User   ON Notifications(UserID, IsRead);
 CREATE INDEX IX_AuditLogs_Table      ON AuditLogs(TableName, LoggedAt);
 CREATE INDEX IX_Services_Provider    ON Services(ProviderID);
+CREATE INDEX IX_Ratings_Provider     ON Ratings(ProviderID);
+CREATE INDEX IX_Ratings_Customer     ON Ratings(CustomerID);
+CREATE INDEX IX_FeedbackReports_By   ON FeedbackReports(SubmittedBy);
 
 -- ============================================================
 --  SEED DATA
@@ -469,6 +496,24 @@ BEGIN
                GETDATE()
         FROM deleted;
     END
+END;
+GO
+
+CREATE OR ALTER TRIGGER trg_UpdateAverageRating
+ON Ratings
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DECLARE @PID INT;
+    SELECT @PID = ProviderID FROM inserted;
+    IF @PID IS NULL SELECT @PID = ProviderID FROM deleted;
+    UPDATE ServiceProviders
+    SET AverageRating = (
+        SELECT ISNULL(AVG(CAST(Stars AS DECIMAL(3,1))), 0)
+        FROM Ratings WHERE ProviderID = @PID
+    )
+    WHERE ProviderID = @PID;
 END;
 GO
 
