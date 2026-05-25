@@ -1,101 +1,290 @@
 <div align="center">
 
-<h1>SERVIGO</h1>
+<img width="120" src="https://cdn-icons-png.flaticon.com/512/942/942748.png"/>
 
-<p>
-A modern Home Services Booking Platform built using 
-<b>C# WinForms</b> and <b>Microsoft SQL Server</b>.
+# SERVIGO
+
+### Enterprise-Level Service Booking & Management Platform
+
+<p align="center">
+  <img src="https://img.shields.io/badge/C%23-Windows%20Forms-68217A?style=for-the-badge&logo=csharp&logoColor=white"/>
+  <img src="https://img.shields.io/badge/.NET-Framework-512BD4?style=for-the-badge&logo=dotnet&logoColor=white"/>
+  <img src="https://img.shields.io/badge/SQL%20Server-Database-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Architecture-3--Layer-blue?style=for-the-badge"/>
 </p>
 
-<p>
-SERVIGO connects customers with trusted service providers for
-home services including plumbing, electrical work, cleaning,
-mechanical repairs and more.
+<p align="center">
+A modern desktop-based platform designed to streamline service booking, provider management, appointment scheduling, and customer interaction through a secure role-based architecture.
 </p>
-
-<br>
-
-<img src="https://img.shields.io/badge/C%23-WinForms-orange?style=for-the-badge">
-<img src="https://img.shields.io/badge/SQL%20Server-Database-black?style=for-the-badge">
-<img src="https://img.shields.io/badge/Desktop-Application-orange?style=for-the-badge">
 
 </div>
 
 ---
 
-<h2>About The Project</h2>
+# 🚀 Overview
 
-<p>
-SERVIGO was developed to simplify the process of finding and booking
-home service providers through a clean and user-friendly desktop platform.
-The system allows customers to explore services, make bookings and track
-their requests while providers can manage services, schedules and bookings
-from their own dashboard.
-</p>
+SERVIGO is a professionally designed desktop application developed using **C# Windows Forms** and **SQL Server**.  
+The system enables customers to discover services, schedule appointments, interact with providers, and manage bookings efficiently while giving administrators full operational control.
 
-<p>
-The platform also includes an admin panel for monitoring users,
-providers, bookings and overall system activity.
-</p>
+The project focuses on:
+- Secure authentication
+- Appointment automation
+- Service provider management
+- Scalable database architecture
+- Professional desktop UI/UX
+- Clean separation of concerns using 3-Layer Architecture
 
 ---
 
-<h2>Main Features</h2>
+# ✨ Core Features
 
-<ul>
-<li>Multi-role system (Customer, Provider, Admin)</li>
-<li>Modern dark themed interface</li>
-<li>Service search and category filtering</li>
-<li>Booking management system</li>
-<li>Provider scheduling and slot management</li>
-<li>Notifications system</li>
-<li>Verified provider badge system</li>
-<li>Dashboard statistics and monitoring</li>
-<li>SQL trigger based automation</li>
-<li>Responsive WinForms layout structure</li>
-</ul>
+<table>
+<tr>
+<td width="50%">
 
----
+## 👤 Customer Module
+- Service browsing system
+- Appointment booking
+- Booking history management
+- Ratings & reviews
+- Real-time notifications
+- Complaint & feedback system
 
-<h2>Project Goals</h2>
+</td>
 
-<ul>
-<li>Improve accessibility of home services</li>
-<li>Reduce manual booking processes</li>
-<li>Create a centralized service management platform</li>
-<li>Provide a smooth desktop user experience</li>
-<li>Ensure organized scheduling and booking flow</li>
-</ul>
+<td width="50%">
 
----
+## 🛠 Provider Module
+- Service management
+- Time-slot scheduling
+- Incoming booking requests
+- Booking approval/rejection
+- Appointment completion workflow
+- Provider notification system
 
-<h2>Future Improvements</h2>
-
-<ul>
-<li>Online payment integration</li>
-<li>Live chat system</li>
-<li>Ratings and reviews</li>
-<li>Email notifications</li>
-<li>Mobile application version</li>
-<li>Advanced analytics dashboard</li>
-</ul>
+</td>
+</tr>
+</table>
 
 ---
 
-<h2>Developer</h2>
+# 🛡 Admin Control Panel
 
-<p>
-<b>Qadees Asghar</b><br>
-UET Lahore Main Campus<br>
-2026
-</p>
+```txt
+✔ User Management
+✔ Provider Verification
+✔ Booking Monitoring
+✔ Analytics Dashboard
+✔ Report Management
+✔ System Activity Tracking
+✔ Account Activation / Deactivation
+```
 
-<p>
-<a href="https://github.com/Qadees-Asghar">GitHub Profile</a>
-</p>
+---
+
+# 🧠 System Architecture
+
+```text
+┌────────────────────────────┐
+│        UI LAYER            │
+│  Windows Forms Interface   │
+└─────────────┬──────────────┘
+              │
+┌─────────────▼──────────────┐
+│         DAL LAYER          │
+│ Database Access & Queries  │
+└─────────────┬──────────────┘
+              │
+┌─────────────▼──────────────┐
+│      DATABASE LAYER        │
+│ SQL Server + Procedures    │
+└────────────────────────────┘
+```
+
+---
+
+# ⚙ Technology Stack
 
 <div align="center">
 
-<h3>⭐ SERVIGO — Making Home Services Simple</h3>
+| Technology | Purpose |
+|---|---|
+| **C#** | Application Logic |
+| **Windows Forms** | Desktop User Interface |
+| **SQL Server** | Relational Database |
+| **ADO.NET** | Database Connectivity |
+| **BCrypt** | Password Security |
+| **Stored Procedures** | Transaction Management |
+| **Triggers & Views** | Database Automation |
+
+</div>
+
+---
+
+# 🔐 Security Implementation
+
+```txt
+✔ BCrypt Password Hashing
+✔ SQL Injection Prevention
+✔ Parameterized Queries
+✔ Session-Based Authentication
+✔ Role-Based Access Control
+✔ Secure Account Management
+```
+
+---
+
+# 🗄 Database Design
+
+The database is fully normalized in **Third Normal Form (3NF)** to ensure:
+- Reduced redundancy
+- Improved scalability
+- Better consistency
+- Efficient relational mapping
+
+### Main Tables
+
+```text
+Users
+Roles
+ServiceProviders
+Services
+TimeSlots
+Bookings
+Ratings
+Notifications
+FeedbackReports
+AuditLogs
+```
+
+---
+
+# 📊 Advanced Database Features
+
+| Feature | Description |
+|---|---|
+| Stored Procedures | Booking & status automation |
+| Triggers | Automatic audit logging |
+| Views | Reporting & analytics |
+| Functions | Dynamic calculations |
+| Transactions | Safe booking operations |
+
+---
+
+# 📦 Core Functional Modules
+
+<table>
+<tr>
+<th>Module</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td>Authentication System</td>
+<td>Secure login/signup with role management</td>
+</tr>
+
+<tr>
+<td>Customer Dashboard</td>
+<td>Service discovery and appointment handling</td>
+</tr>
+
+<tr>
+<td>Provider Dashboard</td>
+<td>Service scheduling and booking workflow</td>
+</tr>
+
+<tr>
+<td>Admin Dashboard</td>
+<td>System-wide management and analytics</td>
+</tr>
+
+<tr>
+<td>Ratings & Reviews</td>
+<td>1–5 star feedback system</td>
+</tr>
+
+<tr>
+<td>Notification System</td>
+<td>Booking and status alerts</td>
+</tr>
+
+</table>
+
+---
+
+# 🧩 OOP Concepts Applied
+
+```txt
+✔ Abstraction
+✔ Inheritance
+✔ Encapsulation
+✔ Polymorphism
+✔ Static Helper Classes
+```
+
+---
+
+# 📁 Project Structure
+
+```text
+SERVIGO/
+│
+├── Forms/
+├── DAL/
+├── Models/
+├── Database/
+├── Helpers/
+├── Assets/
+├── SQL Scripts/
+└── Program.cs
+```
+
+---
+
+# ⚡ Getting Started
+
+### Requirements
+- Visual Studio
+- SQL Server
+- .NET Framework
+- NuGet Packages
+
+### Setup
+
+```bash
+git clone https://github.com/your-username/SERVIGO.git
+```
+
+```bash
+Open Solution → Configure Database → Run Project
+```
+
+---
+
+# 📈 Future Enhancements
+
+- Online payment gateway
+- Mobile application support
+- Email & SMS notifications
+- AI-based provider recommendations
+- Real-time chat system
+
+---
+
+<div align="center">
+
+# 👨‍💻 Developer
+
+## Qadees Asghar
+
+
+</div>
+
+---
+
+<div align="center">
+
+### ⭐ If you like this project, consider giving it a star.
 
 </div>
