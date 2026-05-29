@@ -199,11 +199,11 @@ namespace SERVIGO.Forms
             txtFullName    = MakeInput();
             lblEmailHdr    = MakeHdr("Email Address");
             txtEmail       = MakeInput();
-            lblPhoneHdr    = MakeHdr("Phone Number  (11 digits, e.g. 03001234567)");
+            lblPhoneHdr    = MakeHdr("Phone Number  ");
             txtPhone       = MakeInput();
-            lblCNICHdr     = MakeHdr("CNIC  (13 digits, no dashes)");
+            lblCNICHdr     = MakeHdr("CNIC  ");
             txtCNIC        = MakeInput();
-            lblPwdHdr      = MakeHdr("Password  (letters + digits required)");
+            lblPwdHdr      = MakeHdr("Password  (letters + digits )");
             txtPassword    = MakeInput(password: true);
             lblConfirmHdr  = MakeHdr("Confirm Password");
             txtConfirm     = MakeInput(password: true);
