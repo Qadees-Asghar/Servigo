@@ -30,7 +30,7 @@ namespace SERVIGO.Forms
         {
             bool show = rbProvider.Checked;
             pnlProviderExt.Visible = show;
-            pnlProviderExt.Height  = show ? 80 : 0;   // category only, no description
+            pnlProviderExt.Height  = show ? 80 : 0;  
         }
 
         private void LoadCategories()
@@ -67,14 +67,14 @@ namespace SERVIGO.Forms
                     cnic, password, confirm, out string error))
             { ShowError(error); return; }
 
-            if (UserDAL.EmailExists(email)) { ShowError("This email is already registered."); return; }
-            if (UserDAL.PhoneExists(phone)) { ShowError("This phone number is already registered."); return; }
-            if (UserDAL.CNICExists(cnic))   { ShowError("This CNIC is already registered."); return; }
+            if (UserDAL.EmailExists(email)) { ShowError("This email is already registered!"); return; }
+            if (UserDAL.PhoneExists(phone)) { ShowError("This phone number is already registered!"); return; }
+            if (UserDAL.CNICExists(cnic))   { ShowError("This CNIC is already registered!"); return; }
 
             if (rbProvider.Checked)
             {
                 if (cboCategory.SelectedValue == null)
-                { ShowError("Please select your service category."); return; }
+                { ShowError("Please select your service category!"); return; }
             }
 
             try
@@ -110,7 +110,7 @@ namespace SERVIGO.Forms
                 DialogResult = DialogResult.OK;
                 Close();
             }
-            catch (Exception ex) { ShowError($"Signup failed: {ex.Message}"); }
+            catch (Exception ex) { ShowError($"Signup failed!: {ex.Message}"); }
         }
 
         private void ShowError(string msg) => lblError.Text = "⚠  " + msg;
