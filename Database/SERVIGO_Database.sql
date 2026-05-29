@@ -1,6 +1,5 @@
 -- ============================================================
---  SERVIGO – Smart Appointment Booking System
---  Full Database Script  |  SQL Server  |  3NF Normalized
+--  SERVIGO  Smart Appointment Booking System
 -- ============================================================
 
 USE master;
@@ -19,7 +18,7 @@ USE SERVIGO;
 GO
 
 -- ============================================================
---  LOOKUP / REFERENCE TABLES
+--  REFERENCE TABLES
 -- ============================================================
 
 CREATE TABLE Roles (
@@ -45,8 +44,8 @@ CREATE TABLE Users (
     UserID       NVARCHAR(10)  PRIMARY KEY,            -- SRV-00001
     FullName     NVARCHAR(100) NOT NULL,
     Email        NVARCHAR(150) NOT NULL UNIQUE,
-    Phone        NCHAR(11)     NOT NULL UNIQUE,         -- 11 digits
-    CNIC         NCHAR(13)     NOT NULL UNIQUE,         -- 13 digits
+    Phone        NCHAR(11)     NOT NULL UNIQUE,         
+    CNIC         NCHAR(13)     NOT NULL UNIQUE,         
     PasswordHash NVARCHAR(256) NOT NULL,
     RoleID       INT           NOT NULL REFERENCES Roles(RoleID),
     IsActive     BIT           NOT NULL DEFAULT 1,
