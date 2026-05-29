@@ -88,7 +88,7 @@ namespace SERVIGO.Forms
             // lblDesc
             lblDesc.Text      = "Connect with trusted service professionals.\n" +
                                  "Book electricians, plumbers, mechanics,\n" +
-                                 "laundry workers & more — instantly.";
+                                 "laundry workers & many more ";
             lblDesc.Font      = AppTheme.FontBody;
             lblDesc.ForeColor = AppTheme.TextMuted;
             lblDesc.AutoSize  = true;
@@ -164,7 +164,7 @@ namespace SERVIGO.Forms
             btnSignup.Click += btnSignup_Click;
 
             // ── Form ─────────────────────────────────────────────────────────
-            Text          = "SERVIGO – Smart Appointment Booking";
+            Text          = "SERVIGO -Smart Appointment Booking";
             WindowState   = FormWindowState.Maximized;
             MinimumSize   = new Size(1024, 600);
             StartPosition = FormStartPosition.CenterScreen;
