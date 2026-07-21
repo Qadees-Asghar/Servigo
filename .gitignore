@@ -360,4 +360,7 @@ MigrationBackup/
 .ionide/
 
 # Fody - auto-generated XML schema
-FodyWeavers.xsdSERVIGO_Documentation.docx
+FodyWeavers.xsd
+
+# Documentation files (binary, don't belong in git)
+*.docx
