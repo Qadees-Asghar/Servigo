@@ -4,7 +4,7 @@
 
 # SERVIGO
 
-### Enterprise-Level Service Booking & Management Platform
+### Service Booking & Management Platform
 
 <p align="center">
   <img src="https://img.shields.io/badge/C%23-Windows%20Forms-68217A?style=for-the-badge&logo=csharp&logoColor=white"/>
